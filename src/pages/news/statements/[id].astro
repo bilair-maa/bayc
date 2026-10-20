@@ -1,0 +1,39 @@
+---
+import StatementArticle from '../../../components/news/StatementArticle.astro';
+import Layout from '../../../layouts/Layout.astro';
+import { getOtherStatements, getStatementArticle } from '../../../data/news';
+import { routes } from '../../../data/site';
+
+// An official statement, written in the CMS. Drafts and unknown ids aren't
+// readable by visitors, so both end up as "not found".
+const id = Astro.params.id ?? '';
+const [statement, others] = await Promise.all([getStatementArticle(id), getOtherStatements(id)]);
+if (!statement) Astro.response.status = 404;
+---
+
+<Layout pageTitle={statement?.title ?? 'Statement Not Found'}>
+	{
+		statement ? (
+			<StatementArticle statement={statement} others={others} />
+		) : (
+			<section class="container not-found" aria-labelledby="not-found-heading">
+				<h1 id="not-found-heading" class="page-title">
+					Statement not found
+				</h1>
+				<p>This statement may have been moved or is no longer available.</p>
+				<a href={routes.news}>Back to News &amp; Events</a>
+			</section>
+		)
+	}
+</Layout>
+
+<style>
+	.not-found {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+		padding-block: 96px var(--space-section);
+		font-size: var(--text-xl);
+	}
+</style>

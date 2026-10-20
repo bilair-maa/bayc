@@ -1,0 +1,56 @@
+---
+import { routes } from '../../data/site';
+
+// "News & Events / <current>" above a story, event or statement.
+interface Props {
+	current: string;
+}
+
+const { current } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class="container breadcrumb">
+	<ol role="list">
+		<li><a href={routes.news}>News &amp; Events</a></li>
+		<li aria-current="page">{current}</li>
+	</ol>
+</nav>
+
+<style>
+	.breadcrumb {
+		padding-block-start: 40px;
+		font-size: var(--text-xs);
+	}
+
+	ol {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	li + li::before {
+		content: '/';
+		margin-inline-end: 8px;
+		color: var(--color-gold);
+	}
+
+	a {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: 24px;
+		color: var(--color-text-muted);
+		text-decoration: none;
+	}
+
+	a:hover {
+		color: var(--color-green-800);
+		text-decoration: underline;
+		text-decoration-color: var(--color-gold);
+		text-underline-offset: 4px;
+	}
+
+	[aria-current='page'] {
+		font-weight: 600;
+		color: var(--color-ink);
+	}
+</style>

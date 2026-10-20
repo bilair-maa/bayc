@@ -1,10 +1,13 @@
 ---
-import { pinnedStatementCount, statements } from '../../data/news';
+import { formatCalendarDate, type StatementGroups } from '../../data/news';
 
 // Older statements are rendered on the server and collapsed by the script, so
 // they stay reachable if JavaScript doesn't run.
-const pinned = statements.slice(0, pinnedStatementCount);
-const older = statements.slice(pinnedStatementCount);
+interface Props {
+	statements: StatementGroups;
+}
+
+const { top, older } = Astro.props.statements;
 const olderListId = 'older-statements';
 ---
 
@@ -29,17 +32,16 @@ const olderListId = 'older-statements';
 
 	<ul role="list" class="pinned">
 		{
-			pinned.map((statement) => (
+			top.map((statement) => (
 				<li>
 					<a href={statement.href} class="pinned-statement">
 						<span class="statement-meta">
-							<span class="pinned-label">Pinned</span>
-							<span>{statement.date}</span>
+							{statement.pinned && <span class="pinned-label">Pinned</span>}
+							<time datetime={statement.date}>{formatCalendarDate(statement.date)}</time>
 						</span>
 						<span class="statement-title">{statement.title}</span>
 						<span class="statement-actions">
 							Read <span class="arrow" aria-hidden="true">→</span>
-							<span class="format">PDF</span>
 						</span>
 					</a>
 				</li>
@@ -53,9 +55,13 @@ const olderListId = 'older-statements';
 				{older.map((statement) => (
 					<li>
 						<a href={statement.href} class="older-statement">
-							<span class="older-date">{statement.date}</span>
+							<time class="older-date" datetime={statement.date}>
+								{formatCalendarDate(statement.date)}
+							</time>
 							<span class="statement-title">{statement.title}</span>
-							<span class="format">PDF</span>
+							<span class="arrow" aria-hidden="true">
+								→
+							</span>
 						</a>
 					</li>
 				))}
@@ -165,15 +171,6 @@ const olderListId = 'older-statements';
 		color: var(--color-gold);
 	}
 
-	.statement-actions .format {
-		margin-inline-start: 8px;
-	}
-
-	.format {
-		font-weight: 700;
-		color: var(--color-bronze);
-	}
-
 	.older {
 		margin-block-start: 8px;
 	}
@@ -201,8 +198,8 @@ const olderListId = 'older-statements';
 		font-size: 1.3125rem;
 	}
 
-	.older-statement .format {
-		font-size: 0.875rem;
+	.older-statement .arrow {
+		font-size: var(--text-xl);
 	}
 
 	@media (max-width: 43.75rem) {

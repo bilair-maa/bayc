@@ -1,0 +1,182 @@
+---
+import Eyebrow from './Eyebrow.astro';
+import Lightbox from './Lightbox.astro';
+import NewsBreadcrumb from './NewsBreadcrumb.astro';
+import ReadingProgress from './ReadingProgress.astro';
+import RelatedStories from './RelatedStories.astro';
+import ShareLinks from './ShareLinks.astro';
+import RichContent from '../ui/RichContent.astro';
+import { formatDate, formatTime, type NewsArticle, type Story } from '../../data/news';
+
+interface Props {
+	story: NewsArticle;
+	related: readonly Story[];
+}
+
+const { story, related } = Astro.props;
+const readTime = `${story.readMinutes} min read`;
+---
+
+<ReadingProgress />
+<NewsBreadcrumb current="News" />
+
+<article aria-labelledby="story-heading">
+	<header class="container story-header">
+		<div class="headline">
+			<Eyebrow>News</Eyebrow>
+			<h1 id="story-heading">{story.title}</h1>
+			{story.summary && <p class="summary">{story.summary}</p>}
+		</div>
+		<div class="meta-column">
+			<p class="meta">
+				<time datetime={story.date}>{formatDate(story.date)} · {formatTime(story.date)}</time>
+				{story.author && <span>By {story.author}</span>}
+				<span>{readTime}</span>
+			</p>
+			<ShareLinks title={story.title} />
+		</div>
+	</header>
+
+	{
+		story.image && (
+			<figure class="container hero">
+				<button
+					type="button"
+					class="hero-button"
+					aria-label="Enlarge photo"
+					data-lightbox-src={story.image.src}
+					data-lightbox-alt={story.photoCaption ?? ''}
+				>
+					<img
+						src={story.image.src}
+						alt={story.photoCaption ?? ''}
+						width={story.image.width}
+						height={story.image.height}
+					/>
+				</button>
+				{story.photoCaption && <figcaption>{story.photoCaption}</figcaption>}
+			</figure>
+		)
+	}
+
+	{
+		story.body.length > 0 && (
+			<div class="container body-wrap">
+				<div class="story-body">
+					<RichContent blocks={story.body} enlargeGalleries />
+				</div>
+			</div>
+		)
+	}
+</article>
+
+<RelatedStories stories={related} />
+<Lightbox />
+
+<style>
+	.story-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 24px 80px;
+		padding-block: 40px;
+	}
+
+	.headline {
+		flex: 999 1 640px;
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		min-inline-size: 0;
+	}
+
+	h1 {
+		font-family: var(--font-serif);
+		font-size: clamp(2.75rem, 5.4vw, 4.75rem);
+		font-weight: 500;
+		line-height: 1.02;
+		letter-spacing: -0.02em;
+		color: var(--color-green-800);
+	}
+
+	.summary {
+		max-inline-size: 34em;
+		font-family: var(--font-serif);
+		font-size: clamp(1.375rem, 2vw, 1.625rem);
+		font-style: italic;
+		line-height: 1.4;
+		color: var(--color-text-secondary);
+	}
+
+	.meta-column {
+		flex: 1 1 260px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.meta {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding-inline-start: 20px;
+		border-inline-start: 3px solid var(--color-gold);
+		font-size: var(--text-sm);
+		color: var(--color-text-muted);
+	}
+
+	.hero-button {
+		display: block;
+		inline-size: 100%;
+		padding: 0;
+		overflow: hidden;
+		background: none;
+		border: 0;
+		border-radius: var(--radius);
+		cursor: zoom-in;
+	}
+
+	.hero-button img {
+		display: block;
+		inline-size: 100%;
+		block-size: auto;
+		aspect-ratio: 21 / 9;
+		object-fit: cover;
+	}
+
+	figcaption {
+		margin-block-start: 12px;
+		font-size: var(--text-xs);
+		color: var(--color-text-muted);
+	}
+
+	.body-wrap {
+		display: flex;
+		justify-content: center;
+	}
+
+	.story-body {
+		min-inline-size: 0;
+		max-inline-size: 740px;
+		padding-block: 64px 96px;
+		font-family: var(--font-serif);
+		font-size: 1.375rem;
+		line-height: 1.75;
+	}
+
+	/* The opening paragraph is set larger, with a gold drop cap. */
+	.story-body :global(.rich-content > p:first-child) {
+		font-size: 1.18em;
+		line-height: 1.55;
+		color: var(--color-green-800);
+	}
+
+	.story-body :global(.rich-content > p:first-child::first-letter) {
+		float: left;
+		padding: 8px 12px 0 0;
+		font-size: 3.7em;
+		font-weight: 500;
+		line-height: 0.82;
+		color: var(--color-gold);
+	}
+</style>

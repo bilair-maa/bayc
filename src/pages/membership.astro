@@ -63,7 +63,7 @@ import { membershipApplyId, routes, site } from '../data/site';
 	<section class="container steps-section" aria-labelledby="steps-heading">
 		<div class="steps-header">
 			<h2 id="steps-heading" class="section-title">How to Join</h2>
-			<p class="terms">Free · Voluntary · No payments required</p>
+			<p class="terms">Free · Voluntary · No Payments Required</p>
 		</div>
 		<ol role="list" class="steps" data-join-steps>
 			<li class="step" data-step>
@@ -98,8 +98,7 @@ import { membershipApplyId, routes, site } from '../data/site';
 				<span class="step-number" aria-hidden="true">03</span>
 				<h3>Invitation</h3>
 				<p>
-					Successful applicants receive a formal invitation to join our community. Membership is free
-					and voluntary, with no payments required.
+					Successful applicants receive a formal invitation to join our community.
 				</p>
 			</li>
 		</ol>
@@ -113,7 +112,6 @@ import { membershipApplyId, routes, site } from '../data/site';
 				Submit your application form online. We welcome all youth and professionals committed to
 				civic leadership and heritage.
 			</p>
-			<p class="apply-terms">Membership is free and voluntary, with no payments required.</p>
 			<p class="apply-questions">
 				Questions? Write to <a href={`mailto:${site.email}`}>{site.email}</a>
 			</p>
@@ -314,8 +312,9 @@ import { membershipApplyId, routes, site } from '../data/site';
 	}
 
 	.terms {
-		font-size: var(--text-md);
-		font-weight: 600;
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		line-height: 1.4;
 		color: var(--color-bronze);
 	}
 

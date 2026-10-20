@@ -1,24 +1,72 @@
 ---
 import Button from '../ui/Button.astro';
-
-// Not yet connected to a backend. The submit button stays disabled (which also
-// blocks Enter-to-submit) until the form is wired to Wix, so visitors are never
-// shown a button that silently does nothing.
+import FormProtection from '../ui/FormProtection.astro';
+import { formFields } from '../../data/formFields';
 ---
 
-<form class="signup" aria-labelledby="signup-heading" aria-describedby="signup-status">
+<form
+	data-form="newsletter"
+	method="post"
+	action="/api/forms/newsletter"
+	class="signup"
+	aria-labelledby="signup-heading"
+	aria-describedby="signup-status"
+>
 	<h3 id="signup-heading">Stay Informed</h3>
 	<p class="intro">Event announcements and news from BAYC.</p>
 	<label class="field">
 		Name
-		<input class="input" type="text" name="name" autocomplete="name" placeholder="Your full name" required />
+		<input
+			class="input"
+			type="text"
+			name="name"
+			autocomplete="name"
+			placeholder="Your full name"
+			required
+			aria-describedby="newsletter-name-error"
+			maxlength={formFields.newsletter.name.maxLength}
+		/>
+		<span
+			class="field-error"
+			id="newsletter-name-error"
+			data-error="name"
+			role="alert"
+		></span>
 	</label>
 	<label class="field">
 		Email
-		<input class="input" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+		<input
+			class="input"
+			type="email"
+			name="email"
+			autocomplete="email"
+			placeholder="you@example.com"
+			required
+			aria-describedby="newsletter-email-error"
+			maxlength={formFields.newsletter.email.maxLength}
+		/>
+		<span
+			class="field-error"
+			id="newsletter-email-error"
+			data-error="email"
+			role="alert"
+		></span>
 	</label>
-	<Button type="submit" variant="gold" disabled>Subscribe</Button>
-	<p id="signup-status" class="status">Sign-ups open soon.</p>
+	<Button type="submit" variant="gold" disabled>
+		Subscribe
+	</Button>
+	<p
+		id="signup-status"
+		class="status"
+		data-form-status
+		role="status"
+		aria-live="polite"
+	></p>
+	<p>
+		By pressing Subscribe, you agree to receive BAYC news and event emails.
+		Unsubscribe anytime.
+	</p>
+	<FormProtection />
 </form>
 
 <style>

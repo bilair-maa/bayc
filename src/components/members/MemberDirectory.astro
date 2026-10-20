@@ -1,10 +1,16 @@
 ---
-import HeadshotPlaceholder from '../ui/HeadshotPlaceholder.astro';
-import { memberFields, members } from '../../data/members';
+import Headshot from '../ui/Headshot.astro';
+import { fieldsOf, type DirectoryMember } from '../../data/members';
 
 // Filtering happens in the browser. Every member is rendered on the server,
 // so the full list still shows if the script doesn't run; the filter controls
 // stay hidden until it does.
+interface Props {
+	members: readonly DirectoryMember[];
+}
+
+const { members } = Astro.props;
+const memberFields = fieldsOf(members);
 const allFields = 'All Fields';
 ---
 
@@ -19,20 +25,22 @@ const allFields = 'All Fields';
 				data-directory-query
 			/>
 		</label>
-		<div role="group" aria-label="Filter by field" class="field-buttons">
-			{
-				[allFields, ...memberFields].map((field) => (
-					<button
-						type="button"
-						class="chip"
-						aria-pressed={field === allFields ? 'true' : 'false'}
-						data-directory-field={field === allFields ? '' : field}
-					>
-						{field}
-					</button>
-				))
-			}
-		</div>
+		{
+			memberFields.length > 1 && (
+				<div role="group" aria-label="Filter by field" class="field-buttons">
+					{[allFields, ...memberFields].map((field) => (
+						<button
+							type="button"
+							class="chip"
+							aria-pressed={field === allFields ? 'true' : 'false'}
+							data-directory-field={field === allFields ? '' : field}
+						>
+							{field}
+						</button>
+					))}
+				</div>
+			)
+		}
 	</div>
 
 	<p class="count" aria-live="polite" data-directory-count></p>
@@ -42,19 +50,24 @@ const allFields = 'All Fields';
 			members.map((member) => (
 				<li
 					data-member
-					data-field={member.field}
-					data-search={`${member.name} ${member.profession} ${member.field}`.toLowerCase()}
+					data-field={member.field ?? ''}
+					data-search={[member.name, member.profession, member.field]
+						.filter((part) => part !== undefined)
+						.join(' ')
+						.toLowerCase()}
 				>
 					<article class="member">
 						<div class="photo">
-							<HeadshotPlaceholder iconSize={36} />
+							<Headshot name={member.name} photo={member.photo} initialsSize={28} />
 						</div>
 						<div class="details">
 							<h3>{member.name}</h3>
-							<p class="profession">{member.profession}</p>
-							<p class="meta">
-								{member.field} · {member.city}
-							</p>
+							{member.profession && <p class="profession">{member.profession}</p>}
+							{(member.field || member.city) && (
+								<p class="meta">
+									{[member.field, member.city].filter((part) => part !== undefined).join(' · ')}
+								</p>
+							)}
 						</div>
 					</article>
 				</li>

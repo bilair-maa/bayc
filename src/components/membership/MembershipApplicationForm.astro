@@ -1,25 +1,14 @@
 ---
 import Button from '../ui/Button.astro';
+import FormProtection from '../ui/FormProtection.astro';
 
-// Not yet connected to a backend. The submit button stays disabled (which also
-// blocks Enter-to-submit) until the form is wired to Wix, so visitors are never
-// shown a button that silently does nothing.
-const roles = [
-	{ value: 'student', label: 'Student' },
-	{ value: 'young-professional', label: 'Young Professional' },
-	{ value: 'community-member', label: 'Community Member' },
-] as const;
-
-const interests = [
-	{ value: 'leadership-development', label: 'Leadership Development' },
-	{ value: 'mentorship', label: 'Mentorship' },
-	{ value: 'civic-education', label: 'Civic Education' },
-	{ value: 'community-service', label: 'Community Service' },
-	{ value: 'heritage-culture', label: 'Heritage & Culture' },
-] as const;
+import { roles, interests, formFields } from '../../data/formFields';
 ---
 
 <form
+	data-form="membership"
+	method="post"
+	action="/api/forms/membership"
 	class="application-form"
 	aria-labelledby="application-heading"
 	aria-describedby="application-status"
@@ -29,11 +18,39 @@ const interests = [
 	<div class="field-row">
 		<label class="field">
 			First Name
-			<input class="input" type="text" name="firstName" autocomplete="given-name" required />
+			<input
+				class="input"
+				type="text"
+				name="first_name"
+				autocomplete="given-name"
+				required
+				aria-describedby="membership-first_name-error"
+				maxlength={formFields.membership.first_name.maxLength}
+			/>
+			<span
+				class="field-error"
+				id="membership-first_name-error"
+				data-error="first_name"
+				role="alert"
+			></span>
 		</label>
 		<label class="field">
 			Last Name
-			<input class="input" type="text" name="lastName" autocomplete="family-name" required />
+			<input
+				class="input"
+				type="text"
+				name="last_name"
+				autocomplete="family-name"
+				required
+				aria-describedby="membership-last_name-error"
+				maxlength={formFields.membership.last_name.maxLength}
+			/>
+			<span
+				class="field-error"
+				id="membership-last_name-error"
+				data-error="last_name"
+				role="alert"
+			></span>
 		</label>
 	</div>
 
@@ -47,62 +64,102 @@ const interests = [
 				autocomplete="email"
 				placeholder="you@example.com"
 				required
+				aria-describedby="membership-email-error"
+				maxlength={formFields.membership.email.maxLength}
 			/>
+			<span
+				class="field-error"
+				id="membership-email-error"
+				data-error="email"
+				role="alert"
+			></span>
 		</label>
 		<label class="field">
-			City or Borough
+			City & State
 			<input
 				class="input"
 				type="text"
 				name="city"
 				autocomplete="address-level2"
 				placeholder="e.g. Queens, NY"
+				aria-describedby="membership-city-error"
+				maxlength={formFields.membership.city.maxLength}
 			/>
+			<span
+				class="field-error"
+				id="membership-city-error"
+				data-error="city"
+				role="alert"
+			></span>
 		</label>
 	</div>
 
-	<fieldset>
+	<fieldset aria-describedby="membership-role-error">
 		<legend>I am a</legend>
 		<div class="choices">
-			{
-				roles.map((role) => (
-					<label class="choice">
-						<input type="radio" name="role" value={role.value} required />
-						{role.label}
-					</label>
-				))
-			}
+			{roles.map((role) => (
+				<label class="choice">
+					<input type="radio" name="role" value={role.value} required />
+					{role.label}
+				</label>
+			))}
 		</div>
+		<span
+			class="field-error"
+			id="membership-role-error"
+			data-error="role"
+			role="alert"
+		></span>
 	</fieldset>
 
-	<fieldset>
+	<fieldset aria-describedby="membership-interests-error">
 		<legend>Interested In</legend>
 		<div class="choices choices-grid">
-			{
-				interests.map((interest) => (
-					<label class="choice">
-						<input type="checkbox" name="interests" value={interest.value} />
-						{interest.label}
-					</label>
-				))
-			}
-			{/* A consent choice, not an interest, so it submits under its own name. */}
-			<label class="choice">
-				<input type="checkbox" name="listInDirectory" value="yes" />
-				List Me in the Directory
-			</label>
+			{interests.map((interest) => (
+				<label class="choice">
+					<input type="checkbox" name="interests" value={interest.value} />
+					{interest.label}
+				</label>
+			))}
 		</div>
+		<span
+			class="field-error"
+			id="membership-interests-error"
+			data-error="interests"
+			role="alert"
+		></span>
 	</fieldset>
 
 	<label class="field">
 		Why do you want to join? (optional)
-		<textarea class="input message" name="message" rows="4"></textarea>
+		<textarea
+			class="input message"
+			name="message"
+			rows="4"
+			aria-describedby="membership-message-error"
+			maxlength={formFields.membership.message.maxLength}
+		></textarea>
+		<span
+			class="field-error"
+			id="membership-message-error"
+			data-error="message"
+			role="alert"
+		></span>
 	</label>
 
 	<div class="submit-row">
-		<Button type="submit" variant="green" disabled>Submit Application</Button>
-		<p id="application-status" class="status">Applications open soon.</p>
+		<Button type="submit" variant="green" disabled>
+			Submit Application
+		</Button>
+		<p
+			id="application-status"
+			class="status"
+			data-form-status
+			role="status"
+			aria-live="polite"
+		></p>
 	</div>
+	<FormProtection />
 </form>
 
 <style>

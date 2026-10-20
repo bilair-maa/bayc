@@ -1,0 +1,22 @@
+---
+// The short label with a gold rule above a story, event or statement title.
+---
+
+<p class="eyebrow"><span class="rule" aria-hidden="true"></span><slot /></p>
+
+<style>
+	.eyebrow {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		font-size: var(--text-base);
+		font-weight: 700;
+		color: var(--color-bronze);
+	}
+
+	.rule {
+		inline-size: 44px;
+		block-size: 2px;
+		background: var(--color-gold);
+	}
+</style>

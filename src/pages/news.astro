@@ -1,81 +1,93 @@
 ---
-import FeaturedCarousel from '../components/news/FeaturedCarousel.astro';
+import EventCarousel from '../components/news/EventCarousel.astro';
 import StatementList from '../components/news/StatementList.astro';
+import StoryGrid from '../components/news/StoryGrid.astro';
 import Layout from '../layouts/Layout.astro';
-import { featuredStories, stories } from '../data/news';
+import { getEvents, getNews, getStatements } from '../data/news';
 import { site } from '../data/site';
 
+const now = new Date();
+const [statements, events, news] = await Promise.all([getStatements(), getEvents(now), getNews()]);
+
+const statementsSection = { id: 'statements', label: 'Official Statements' };
+const eventsSection = { id: 'events', label: 'Events' };
+const newsSection = { id: 'news', label: 'News' };
+const showStatements = statements.top.length > 0;
+const showEvents = events.upcoming.length > 0 || events.past.length > 0;
+const showNews = news.length > 0;
 const sections = [
-	{ id: 'statements', label: 'Official Statements' },
-	{ id: 'news', label: 'News & Events' },
-] as const;
-const [statementsSection, newsSection] = sections;
+	...(showStatements ? [statementsSection] : []),
+	...(showEvents ? [eventsSection] : []),
+	...(showNews ? [newsSection] : []),
+];
 ---
 
-<Layout pageTitle="News & Statements">
+<Layout pageTitle="News & Events">
 	<section class="container intro" aria-labelledby="news-page-heading">
-		<h1 id="news-page-heading" class="page-title">News &amp;<br />Statements</h1>
-		<nav aria-label="On this page" class="jump-nav">
-			{
-				sections.map((section) => (
-					<a href={`#${section.id}`} class="jump-link">
-						{section.label} <span aria-hidden="true">↓</span>
-					</a>
-				))
-			}
-		</nav>
+		<h1 id="news-page-heading" class="page-title">News &amp; Events</h1>
+		{
+			sections.length > 1 && (
+				<nav aria-label="On this page" class="jump-nav">
+					{sections.map((section) => (
+						<a href={`#${section.id}`} class="jump-link">
+							{section.label} <span aria-hidden="true">↓</span>
+						</a>
+					))}
+				</nav>
+			)
+		}
 	</section>
 
-	<section
-		id={statementsSection.id}
-		class="container statements"
-		aria-labelledby="statements-heading"
-	>
-		<StatementList />
-	</section>
+	{
+		sections.length === 0 && (
+			<div class="container empty">
+				<p class="coming-soon">News, events and official statements from BAYC will be posted here.</p>
+			</div>
+		)
+	}
 
-	<section id={newsSection.id} class="news" aria-labelledby="news-heading">
-		<div class="container news-header">
-			<h2 id="news-heading">{newsSection.label}</h2>
-			<p>Media inquiries: <a href={`mailto:${site.email}`}>{site.email}</a></p>
-		</div>
-		<div class="container">
-			<FeaturedCarousel stories={featuredStories} />
-		</div>
-		<div class="container stories">
-			<ul role="list" class="story-grid">
-				{
-					stories.map((story) => (
-						<li>
-							<a href={story.href} class="story">
-								<div class="story-media">
-									<img
-										src={story.image.src}
-										alt=""
-										width={story.image.width}
-										height={story.image.height}
-										loading="lazy"
-										style={`object-position: ${story.image.focus}`}
-									/>
-								</div>
-								<div class="story-body">
-									<span class="story-meta">
-										<span class="story-type">{story.type}</span>
-										<span>{story.date}</span>
-									</span>
-									<span class="story-title">{story.title}</span>
-									<span class="story-excerpt">{story.excerpt}</span>
-								</div>
-							</a>
-						</li>
-					))
-				}
-			</ul>
-			<p class="image-note">
-				[Images are placeholders from the site's photo library. Replace with photos from each story.]
-			</p>
-		</div>
-	</section>
+	{
+		showStatements && (
+			<section id={statementsSection.id} class="container statements" aria-labelledby="statements-heading">
+				<StatementList statements={statements} />
+			</section>
+		)
+	}
+
+	{
+		showEvents && (
+			<section id={eventsSection.id} class="container page-section" aria-labelledby="events-heading">
+				<div class="section-header">
+					<h2 id="events-heading">{eventsSection.label}</h2>
+				</div>
+				{events.upcoming.length > 0 ? (
+					<EventCarousel stories={events.upcoming} />
+				) : (
+					<p class="no-upcoming">No upcoming events right now. Check back soon.</p>
+				)}
+				{events.past.length > 0 && (
+					<div class="past-events">
+						<h3>Past Events</h3>
+						<StoryGrid stories={events.past} label="Event" />
+					</div>
+				)}
+			</section>
+		)
+	}
+
+	{
+		showNews && (
+			<section id={newsSection.id} class="container page-section" aria-labelledby="news-heading">
+				<div class="section-header">
+					<h2 id="news-heading">{newsSection.label}</h2>
+					<p>
+						Media inquiries: <a href={`mailto:${site.email}`}>{site.email}</a>
+					</p>
+				</div>
+				<StoryGrid stories={news} label="News" />
+			</section>
+		)
+	}
 </Layout>
 
 <style>
@@ -114,24 +126,41 @@ const [statementsSection, newsSection] = sections;
 		color: var(--color-gold);
 	}
 
+	.empty {
+		padding-block: 40px var(--space-section);
+		border-block-start: 1px solid var(--color-rule);
+	}
+
+	.coming-soon {
+		font-family: var(--font-serif);
+		font-size: 1.75rem;
+		color: var(--color-green-800);
+	}
+
 	.statements {
 		padding-block-end: 24px;
 	}
 
-	.news {
+	.page-section {
 		padding-block-start: 88px;
 	}
 
-	.news-header {
+	.page-section:last-of-type {
+		padding-block-end: var(--space-section);
+	}
+
+	.section-header {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: flex-end;
 		justify-content: space-between;
 		gap: 16px 48px;
-		padding-block-end: 40px;
+		margin-block-end: 40px;
+		padding-block-start: 28px;
+		border-block-start: 2px solid var(--color-green-800);
 	}
 
-	.news-header h2 {
+	.section-header h2 {
 		font-family: var(--font-serif);
 		font-size: clamp(2.5rem, 4.4vw, 3.75rem);
 		font-weight: 500;
@@ -139,99 +168,30 @@ const [statementsSection, newsSection] = sections;
 		color: var(--color-green-800);
 	}
 
-	.news-header p {
+	.section-header p {
 		font-size: var(--text-md);
 		color: var(--color-text-secondary);
 	}
 
-	.news-header a {
+	.section-header a {
 		font-weight: 600;
 	}
 
-	.stories {
-		padding-block: 48px var(--space-section);
-	}
-
-	.story-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
-		gap: 28px;
-	}
-
-	.story {
-		display: flex;
-		flex-direction: column;
-		block-size: 100%;
-		overflow: hidden;
-		background: var(--color-surface);
-		border-radius: var(--radius);
-		color: var(--color-ink);
-		text-decoration: none;
-	}
-
-	.story-media {
-		aspect-ratio: 4 / 3;
-		overflow: hidden;
-	}
-
-	.story-media img {
-		inline-size: 100%;
-		block-size: 100%;
-		object-fit: cover;
-		transition: transform 0.6s ease;
-	}
-
-	.story:hover .story-media img {
-		transform: scale(1.06);
-	}
-
-	.story-body {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		padding: 24px 26px 28px;
-	}
-
-	.story-meta {
-		display: flex;
-		gap: 14px;
-		font-size: var(--text-xs);
-		font-weight: 600;
-		color: var(--color-text-muted);
-	}
-
-	.story-type {
-		color: var(--color-bronze);
-	}
-
-	.story-title {
+	.no-upcoming {
 		font-family: var(--font-serif);
-		font-size: var(--text-3xl);
-		line-height: 1.22;
+		font-size: var(--text-2xl);
 		color: var(--color-green-800);
 	}
 
-	.story:hover .story-title {
-		text-decoration: underline;
-		text-decoration-color: var(--color-gold);
-		text-underline-offset: 5px;
+	.past-events {
+		margin-block-start: 64px;
 	}
 
-	.story-excerpt {
-		font-size: var(--text-base);
-		line-height: 1.55;
-		color: var(--color-text-secondary);
-	}
-
-	.image-note {
-		margin-block-start: 48px;
-		font-size: 0.875rem;
-		color: var(--color-bronze);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.story-media img {
-			transition: none;
-		}
+	.past-events h3 {
+		margin-block-end: 24px;
+		font-family: var(--font-serif);
+		font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+		font-weight: 500;
+		color: var(--color-green-800);
 	}
 </style>

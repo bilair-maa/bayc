@@ -1,16 +1,22 @@
 ---
 import AdvisorCard from '../components/leadership/AdvisorCard.astro';
 import OfficerCard from '../components/leadership/OfficerCard.astro';
-import ReadMore from '../components/ui/ReadMore.astro';
+import Headshot from '../components/ui/Headshot.astro';
+import RichContent from '../components/ui/RichContent.astro';
 import Layout from '../layouts/Layout.astro';
-import { advisors, founder, officers } from '../data/leadership';
+import { getLeadership } from '../data/leadership';
 import { routes } from '../data/site';
 
+const { founder, officers, advisors } = await getLeadership();
+
+const councilSection = { id: 'council', label: 'Leadership Council' };
+const advisorySection = { id: 'advisory', label: 'Strategic Advisory Council' };
+const showCouncil = founder !== undefined || officers.length > 0;
+const showAdvisory = advisors.length > 0;
 const sections = [
-	{ id: 'council', label: 'Leadership Council' },
-	{ id: 'advisory', label: 'Strategic Advisory Council' },
-] as const;
-const [councilSection, advisorySection] = sections;
+	...(showCouncil ? [councilSection] : []),
+	...(showAdvisory ? [advisorySection] : []),
+];
 ---
 
 <Layout pageTitle="Leadership">
@@ -22,98 +28,101 @@ const [councilSection, advisorySection] = sections;
 				supported by a Strategic Advisory Council.
 			</p>
 		</div>
-		<nav aria-label="On this page" class="jump-nav">
-			<ol role="list">
-				{
-					sections.map((section, index) => (
-						<li>
-							<a href={`#${section.id}`} class="jump-link">
-								<span class="jump-number" aria-hidden="true">
-									{String(index + 1).padStart(2, '0')}
-								</span>
-								<span class="jump-label">{section.label}</span>
-								<span class="jump-arrow" aria-hidden="true">↓</span>
-							</a>
-						</li>
-					))
-				}
-			</ol>
-		</nav>
+		{
+			sections.length > 1 && (
+				<nav aria-label="On this page" class="jump-nav">
+					<ol role="list">
+						{sections.map((section, index) => (
+							<li>
+								<a href={`#${section.id}`} class="jump-link">
+									<span class="jump-number" aria-hidden="true">
+										{String(index + 1).padStart(2, '0')}
+									</span>
+									<span class="jump-label">{section.label}</span>
+									<span class="jump-arrow" aria-hidden="true">↓</span>
+								</a>
+							</li>
+						))}
+					</ol>
+				</nav>
+			)
+		}
 	</section>
 
-	<section id={councilSection.id} class="container council" aria-labelledby="council-heading">
-		<h2 id="council-heading" class="group-heading">{councilSection.label}</h2>
-
-		<article class="founder">
-			<img
-				src={founder.portrait}
-				alt={`Headshot of ${founder.name}`}
-				width="1024"
-				height="1024"
-				loading="lazy"
-			/>
-			<div class="founder-details">
-				<p class="founder-title">{founder.role}</p>
-				<h3>
-					{founder.name}
-					<span class="divider" aria-hidden="true">|</span>
-					<span class="city">{founder.city}</span>
-				</h3>
-				<p>
-					Born and raised in New York, with family roots in Sandwip, Anindya grew up attending
-					community gatherings with his father and learning Bangla and Bengali literature from his
-					mother. He founded BAYC to bring the community together, encourage civic participation, and
-					develop the next generation of leaders.
-				</p>
-				<ReadMore id="founder">
-					<p>
-						His mother earned her master's degree in Bangla from the University of Dhaka. His father
-						has been a student activist and leader since his days at Chittagong University.
-						<a href={routes.founderLetter}>Read his full message</a>.
-					</p>
-				</ReadMore>
-			</div>
-		</article>
-
-		<ul role="list" class="officer-grid">
-			{
-				officers.map((officer) => (
-					<li>
-						<OfficerCard officer={officer} />
-					</li>
-				))
-			}
-		</ul>
-	</section>
-
-	<section id={advisorySection.id} class="advisory" aria-labelledby="advisory-heading">
-		<div class="container advisory-inner">
-			<div class="advisory-header">
-				<h2 id="advisory-heading">
-					Strategic<br />Advisory <em>Council</em>
+	{
+		showCouncil && (
+			<section id={councilSection.id} class="container council" aria-labelledby="council-heading">
+				<h2 id="council-heading" class="group-heading">
+					{councilSection.label}
 				</h2>
-				<div class="advisory-intro">
-					<p class="advisory-statement">
-						The Advisory Council serves as the cornerstone of our strategic direction, providing
-						expert guidance on civic engagement and heritage preservation.
-					</p>
-					<p class="advisory-note">
-						Our members are dedicated professionals and leaders who ensure that BAYC remains a
-						powerful, independent voice for the Bangladeshi American community.
-					</p>
+
+				{founder && (
+					<article class="founder">
+						<div class="founder-photo">
+							<Headshot name={founder.name} photo={founder.photo} initialsSize={96} />
+						</div>
+						<div class="founder-details">
+							{founder.title && <p class="founder-title">{founder.title}</p>}
+							<h3>
+								{founder.name}
+								{founder.city && (
+									<>
+										<span class="divider" aria-hidden="true">|</span>
+										<span class="city">{founder.city}</span>
+									</>
+								)}
+							</h3>
+							{founder.bio.length > 0 && <RichContent blocks={founder.bio} />}
+							<a href={routes.founderLetter} class="letter-link">
+								Read the founder's full message <span aria-hidden="true">→</span>
+							</a>
+						</div>
+					</article>
+				)}
+
+				{officers.length > 0 && (
+					<ul role="list" class="officer-grid">
+						{officers.map((officer) => (
+							<li>
+								<OfficerCard officer={officer} />
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
+		)
+	}
+
+	{
+		showAdvisory && (
+			<section id={advisorySection.id} class="advisory" aria-labelledby="advisory-heading">
+				<div class="container advisory-inner">
+					<div class="advisory-header">
+						<h2 id="advisory-heading">
+							Strategic<br />Advisory <em>Council</em>
+						</h2>
+						<div class="advisory-intro">
+							<p class="advisory-statement">
+								The Advisory Council serves as the cornerstone of our strategic direction,
+								providing expert guidance on civic engagement and heritage preservation.
+							</p>
+							<p class="advisory-note">
+								Our members are dedicated professionals and leaders who ensure that BAYC remains a
+								powerful, independent voice for the Bangladeshi American community.
+							</p>
+						</div>
+					</div>
+					<ul role="list" class="advisor-grid">
+						{advisors.map((advisor) => (
+							<li>
+								<AdvisorCard advisor={advisor} />
+							</li>
+						))}
+					</ul>
 				</div>
-			</div>
-			<ul role="list" class="advisor-grid">
-				{
-					advisors.map((advisor) => (
-						<li>
-							<AdvisorCard advisor={advisor} />
-						</li>
-					))
-				}
-			</ul>
-		</div>
-	</section>
+			</section>
+		)
+	}
 </Layout>
 
 <style>
@@ -234,13 +243,10 @@ const [councilSection, advisorySection] = sections;
 		}
 	}
 
-	.founder img {
+	.founder-photo {
 		inline-size: 100%;
 		max-inline-size: 340px;
 		aspect-ratio: 4 / 5;
-		object-fit: cover;
-		object-position: 50% 30%;
-		border-radius: var(--radius);
 	}
 
 	.founder-details {
@@ -250,6 +256,28 @@ const [councilSection, advisorySection] = sections;
 		max-inline-size: 36em;
 		font-size: var(--text-xl);
 		line-height: var(--leading-body);
+	}
+
+	.letter-link {
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-block-size: var(--tap-target);
+		color: var(--color-green-800);
+		font-size: var(--text-md);
+		font-weight: 600;
+		text-decoration-color: var(--color-gold);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+	}
+
+	.letter-link:hover {
+		color: var(--color-green-950);
+	}
+
+	.letter-link span {
+		color: var(--color-gold);
 	}
 
 	.founder-title {

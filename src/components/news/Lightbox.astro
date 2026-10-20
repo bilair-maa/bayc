@@ -1,0 +1,114 @@
+---
+// Full-screen photo viewer. Any button with `data-lightbox-src` opens it; the
+// native <dialog> traps focus, closes on Escape and returns focus on close.
+---
+
+<dialog class="lightbox" aria-label="Photo viewer" data-lightbox>
+	<form method="dialog" class="close-form">
+		<button type="submit" class="close" aria-label="Close photo viewer">
+			<svg viewBox="0 0 24 24" aria-hidden="true">
+				<path d="M6 6l12 12"></path>
+				<path d="M18 6L6 18"></path>
+			</svg>
+		</button>
+	</form>
+	<figure>
+		<img alt="" data-lightbox-image />
+		<figcaption data-lightbox-caption></figcaption>
+	</figure>
+</dialog>
+
+<script>
+	const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+	const image = dialog?.querySelector<HTMLImageElement>('[data-lightbox-image]');
+	const caption = dialog?.querySelector<HTMLElement>('[data-lightbox-caption]');
+
+	if (dialog && image && caption) {
+		for (const trigger of document.querySelectorAll<HTMLButtonElement>('[data-lightbox-src]')) {
+			trigger.addEventListener('click', () => {
+				image.src = trigger.dataset.lightboxSrc ?? '';
+				image.alt = trigger.dataset.lightboxAlt ?? '';
+				caption.textContent = trigger.dataset.lightboxAlt ?? '';
+				caption.hidden = caption.textContent === '';
+				dialog.showModal();
+			});
+		}
+		// A click on the dimmed backdrop (the dialog itself, not its content) closes it.
+		dialog.addEventListener('click', (event) => {
+			if (event.target === dialog) dialog.close();
+		});
+	}
+</script>
+
+<style>
+	.lightbox {
+		--focus-ring-color: var(--color-gold-light);
+		max-inline-size: none;
+		max-block-size: none;
+		inline-size: 100%;
+		block-size: 100%;
+		margin: 0;
+		padding: 32px;
+		box-sizing: border-box;
+		background: color-mix(in srgb, var(--color-green-950) 92%, transparent);
+		border: 0;
+		color: var(--color-on-dark-soft);
+	}
+
+	.lightbox[open] {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.lightbox::backdrop {
+		background: transparent;
+	}
+
+	.close-form {
+		position: absolute;
+		inset-block-start: 20px;
+		inset-inline-end: 20px;
+	}
+
+	.close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: var(--tap-target);
+		block-size: var(--tap-target);
+		padding: 0;
+		background: transparent;
+		border: 0;
+		border-radius: 50%;
+		color: var(--color-cream);
+		cursor: pointer;
+	}
+
+	.close svg {
+		inline-size: 24px;
+		block-size: 24px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+	}
+
+	figure {
+		inline-size: 100%;
+		max-inline-size: 1100px;
+	}
+
+	img {
+		display: block;
+		inline-size: 100%;
+		max-block-size: 78vh;
+		object-fit: contain;
+	}
+
+	figcaption {
+		margin-block-start: 14px;
+		font-size: var(--text-sm);
+		text-align: center;
+	}
+</style>

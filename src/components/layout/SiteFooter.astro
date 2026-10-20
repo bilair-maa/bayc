@@ -1,4 +1,5 @@
 ---
+import SocialLinks from '../ui/SocialLinks.astro';
 import { site, siteNav } from '../../data/site';
 
 const currentYear = new Date().getFullYear();
@@ -27,7 +28,7 @@ const currentYear = new Date().getFullYear();
 			<address class="contact">
 				<a href={`mailto:${site.email}`} class="link-on-dark">{site.email}</a>
 				<span>{site.location}</span>
-				<span>{site.socialPlaceholders.join(' · ')}</span>
+				<SocialLinks />
 			</address>
 		</div>
 		<div class="legal">

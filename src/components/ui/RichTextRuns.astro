@@ -1,0 +1,42 @@
+---
+import type { TextRun } from '../../data/richContent';
+
+// Inline text from a CMS rich content field: bold, italic, underline and links.
+interface Props {
+	runs: readonly TextRun[];
+}
+
+const { runs } = Astro.props;
+---
+
+{
+	runs.map((run) => {
+		const classes = ['run', { bold: run.bold, italic: run.italic, underline: run.underline }];
+		return run.link ? (
+			<a href={run.link} class:list={classes}>
+				{run.text}
+			</a>
+		) : (
+			<span class:list={classes}>{run.text}</span>
+		);
+	})
+}
+
+<style>
+	/* Line breaks typed in the editor are kept. */
+	.run {
+		white-space: pre-line;
+	}
+
+	.bold {
+		font-weight: 700;
+	}
+
+	.italic {
+		font-style: italic;
+	}
+
+	.underline {
+		text-decoration: underline;
+	}
+</style>

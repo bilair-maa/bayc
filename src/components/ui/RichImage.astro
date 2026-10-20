@@ -1,0 +1,29 @@
+---
+import type { ArticleImage } from '../../data/richContent';
+
+// An image from a CMS rich content field, linked when the editor added a link.
+interface Props {
+	image: ArticleImage;
+}
+
+const { image } = Astro.props;
+---
+
+{
+	image.link ? (
+		<a href={image.link}>
+			<img src={image.src} alt={image.alt} width={image.width} height={image.height} loading="lazy" />
+		</a>
+	) : (
+		<img src={image.src} alt={image.alt} width={image.width} height={image.height} loading="lazy" />
+	)
+}
+
+<style>
+	img {
+		display: block;
+		inline-size: 100%;
+		block-size: auto;
+		border-radius: var(--radius);
+	}
+</style>

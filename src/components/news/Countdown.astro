@@ -1,0 +1,105 @@
+---
+// Days, hours, minutes and seconds until an event starts. Rendered on the
+// server for the moment of the request, then kept current by the script.
+interface Props {
+	// ISO 8601 instant.
+	start: string;
+	now: Date;
+}
+
+const { start, now } = Astro.props;
+
+function parts(msLeft: number) {
+	let seconds = Math.max(0, Math.floor(msLeft / 1000));
+	const days = Math.floor(seconds / 86400);
+	seconds -= days * 86400;
+	const hours = Math.floor(seconds / 3600);
+	seconds -= hours * 3600;
+	const minutes = Math.floor(seconds / 60);
+	return { days, hours, minutes, seconds: seconds - minutes * 60 };
+}
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const initial = parts(new Date(start).getTime() - now.getTime());
+const units = [
+	{ key: 'days', label: 'Days', value: String(initial.days) },
+	{ key: 'hours', label: 'Hours', value: pad(initial.hours) },
+	{ key: 'minutes', label: 'Minutes', value: pad(initial.minutes) },
+	{ key: 'seconds', label: 'Seconds', value: pad(initial.seconds) },
+] as const;
+---
+
+<div class="countdown" role="timer" aria-label="Time until the event starts" data-countdown={start}>
+	{
+		units.map((unit) => (
+			<div class="unit">
+				<span class:list={['number', { accent: unit.key === 'seconds' }]} data-countdown-unit={unit.key}>
+					{unit.value}
+				</span>
+				<span class="label">{unit.label}</span>
+			</div>
+		))
+	}
+</div>
+
+<script>
+	const pad = (n: number) => String(n).padStart(2, '0');
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-countdown]')) {
+		const start = new Date(root.dataset.countdown ?? '').getTime();
+		if (Number.isNaN(start)) continue;
+		const unit = (key: string) => root.querySelector<HTMLElement>(`[data-countdown-unit="${key}"]`);
+		const fields = { days: unit('days'), hours: unit('hours'), minutes: unit('minutes'), seconds: unit('seconds') };
+
+		const tick = () => {
+			let seconds = Math.max(0, Math.floor((start - Date.now()) / 1000));
+			const days = Math.floor(seconds / 86400);
+			seconds -= days * 86400;
+			const hours = Math.floor(seconds / 3600);
+			seconds -= hours * 3600;
+			const minutes = Math.floor(seconds / 60);
+			seconds -= minutes * 60;
+			if (fields.days) fields.days.textContent = String(days);
+			if (fields.hours) fields.hours.textContent = pad(hours);
+			if (fields.minutes) fields.minutes.textContent = pad(minutes);
+			if (fields.seconds) fields.seconds.textContent = pad(seconds);
+			if (start - Date.now() <= 0) window.clearInterval(timer);
+		};
+		const timer = window.setInterval(tick, 1000);
+		tick();
+	}
+</script>
+
+<style>
+	.countdown {
+		display: flex;
+		align-items: flex-end;
+		gap: 28px;
+	}
+
+	.unit {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-inline-size: 64px;
+	}
+
+	.number {
+		font-family: var(--font-serif);
+		font-size: clamp(2.75rem, 4.6vw, 4rem);
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+		color: var(--color-green-800);
+	}
+
+	.number.accent {
+		color: var(--color-bronze);
+	}
+
+	.label {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--color-bronze);
+	}
+</style>

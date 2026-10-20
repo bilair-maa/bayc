@@ -1,0 +1,397 @@
+---
+import { formatEventDay, type Story } from '../../data/news';
+
+// Upcoming events as a slideshow, with a strip of every event beneath it.
+
+interface Props {
+	stories: readonly Story[];
+}
+
+const { stories } = Astro.props;
+const advanceMs = 6500;
+---
+
+<div
+	class="event-carousel"
+	role="region"
+	aria-roledescription="carousel"
+	aria-label="Upcoming events"
+	data-carousel
+	data-advance-ms={advanceMs}
+>
+	<div class="carousel">
+		{
+			stories.map((story, index) => (
+				<div
+					class="slide"
+					role="group"
+					aria-roledescription="slide"
+					aria-label={`${index + 1} of ${stories.length}`}
+					data-slide
+					data-state={index === 0 ? 'current' : 'hidden'}
+					inert={index !== 0}
+				>
+					{story.image && (
+						<img
+							src={story.image.src}
+							alt=""
+							width={story.image.width}
+							height={story.image.height}
+							loading={index === 0 ? 'eager' : 'lazy'}
+						/>
+					)}
+					<div class:list={['slide-tint', { solid: !story.image }]} />
+					<div class="slide-content">
+						<p class="slide-meta">
+							<span class="slide-type">Upcoming Event</span>
+							<time datetime={story.date}>{formatEventDay(story.date)}</time>
+						</p>
+						<h3>{story.title}</h3>
+						<a href={story.href} class="slide-link">
+							Event Details
+						</a>
+					</div>
+				</div>
+			))
+		}
+		{
+			stories.length > 1 && (
+				<div class="arrows" hidden data-carousel-controls>
+					<button type="button" class="arrow" aria-label="Previous" data-carousel-prev>
+						←
+					</button>
+					<button type="button" class="arrow" aria-label="Next" data-carousel-next>
+						→
+					</button>
+				</div>
+			)
+		}
+	</div>
+
+	{
+		stories.length > 1 && (
+			<ul role="list" class="thumbs" aria-label="All upcoming events">
+				{stories.map((story, index) => (
+					<li>
+						<a
+							href={story.href}
+							class="thumb"
+							aria-current={index === 0 ? 'true' : undefined}
+							data-carousel-thumb
+						>
+							{story.image ? (
+								<img src={story.image.src} alt="" width={story.image.width} height={story.image.height} loading="lazy" />
+							) : (
+								<span class="thumb-brand" />
+							)}
+							<span class="thumb-text">
+								<span class="thumb-meta">
+									<time datetime={story.date}>{formatEventDay(story.date)}</time>
+								</span>
+								<span class="thumb-title">{story.title}</span>
+							</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		)
+	}
+</div>
+
+<script>
+	// Advances on a timer, pausing while hovered or focused. Hovering or
+	// focusing a thumbnail previews it in the main frame; selecting it opens
+	// the story. The arrows stop the timer for good, and it never
+	// auto-advances with reduced motion. Without JavaScript only the first
+	// slide shows, and the thumbnails still link to every story.
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+		const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
+		const thumbs = [...root.querySelectorAll<HTMLAnchorElement>('[data-carousel-thumb]')];
+		const controls = root.querySelector<HTMLElement>('[data-carousel-controls]');
+		const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+		const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
+		if (slides.length < 2 || !controls || !prev || !next) continue;
+
+		let current = 0;
+		let stopped = reducedMotion.matches;
+		let paused = false;
+
+		const show = (index: number) => {
+			current = (index + slides.length) % slides.length;
+			slides.forEach((slide, i) => {
+				const isCurrent = i === current;
+				slide.dataset.state = isCurrent ? 'current' : 'hidden';
+				slide.inert = !isCurrent;
+			});
+			thumbs.forEach((thumb, i) => {
+				if (i === current) thumb.setAttribute('aria-current', 'true');
+				else thumb.removeAttribute('aria-current');
+			});
+		};
+
+		const showByUser = (index: number) => {
+			stopped = true;
+			show(index);
+		};
+
+		prev.addEventListener('click', () => showByUser(current - 1));
+		next.addEventListener('click', () => showByUser(current + 1));
+		thumbs.forEach((thumb, index) => {
+			thumb.addEventListener('mouseenter', () => show(index));
+			thumb.addEventListener('focus', () => show(index));
+		});
+		root.addEventListener('mouseenter', () => (paused = true));
+		root.addEventListener('mouseleave', () => (paused = false));
+		root.addEventListener('focusin', () => (paused = true));
+		root.addEventListener('focusout', () => (paused = false));
+
+		controls.hidden = false;
+		window.setInterval(() => {
+			if (!stopped && !paused) show(current + 1);
+		}, Number(root.dataset.advanceMs));
+	}
+</script>
+
+<style>
+	.event-carousel {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		border-radius: var(--radius);
+	}
+
+	.carousel {
+		--focus-ring-color: var(--color-gold-light);
+		position: relative;
+		block-size: clamp(420px, 42vw, 580px);
+		overflow: hidden;
+		color: var(--color-cream);
+	}
+
+	.slide {
+		position: absolute;
+		inset: 0;
+		transition:
+			opacity 0.8s ease,
+			transform 1.2s ease;
+	}
+
+	.slide[data-state='hidden'] {
+		opacity: 0;
+		transform: scale(1.04);
+	}
+
+	.slide img {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+	}
+
+	.slide-tint {
+		position: absolute;
+		inset: 0;
+		background: var(--color-green-950);
+		opacity: 0.5;
+	}
+
+	.slide-tint.solid {
+		opacity: 1;
+	}
+
+	.slide-content {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		gap: 16px;
+		block-size: 100%;
+		padding: 0 48px 96px;
+	}
+
+	.slide-meta {
+		display: flex;
+		gap: 16px;
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-on-dark-subtle);
+	}
+
+	.slide-type {
+		color: var(--color-gold-light);
+	}
+
+	h3 {
+		max-inline-size: 18ch;
+		font-family: var(--font-serif);
+		font-size: clamp(2.125rem, 4vw, 3.5rem);
+		font-weight: 500;
+		line-height: 1.05;
+	}
+
+	.slide-link {
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--tap-target);
+		color: var(--color-cream);
+		font-size: var(--text-md);
+		font-weight: 700;
+		text-decoration-color: var(--color-gold);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+	}
+
+	.slide-link:hover {
+		color: var(--color-on-dark-strong);
+	}
+
+	.arrows {
+		position: absolute;
+		inset-inline-end: 48px;
+		inset-block-end: 28px;
+		display: flex;
+		gap: 10px;
+	}
+
+	.arrows[hidden] {
+		display: none;
+	}
+
+	.arrow {
+		inline-size: 52px;
+		block-size: 52px;
+		background: color-mix(in srgb, var(--color-green-950) 35%, transparent);
+		border: 1px solid color-mix(in srgb, var(--color-cream) 60%, transparent);
+		border-radius: var(--radius);
+		color: var(--color-cream);
+		font-size: 1.375rem;
+		cursor: pointer;
+	}
+
+	.arrow:hover {
+		background: var(--color-gold);
+		border-color: var(--color-gold);
+		color: var(--color-ink-on-gold);
+	}
+
+	/* Thumbnail strip: one continuous bar joined to the bottom of the frame. */
+	.thumbs {
+		--focus-ring-color: var(--color-gold-light);
+		display: grid;
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(160px, 1fr);
+		overflow-x: auto;
+		background: var(--color-green-950);
+		scroll-snap-type: x proximity;
+	}
+
+	.thumbs > li {
+		scroll-snap-align: start;
+	}
+
+	.thumbs > li + li {
+		border-inline-start: 1px solid color-mix(in srgb, var(--color-cream) 25%, transparent);
+	}
+
+	.thumb {
+		position: relative;
+		display: block;
+		block-size: 88px;
+		overflow: hidden;
+		background: var(--color-green-800);
+		color: var(--color-cream);
+		text-decoration: none;
+	}
+
+	/* Focus ring drawn inside, so the joined strip doesn't clip it. */
+	.thumb:focus-visible {
+		outline-offset: -3px;
+	}
+
+	.thumb img,
+	.thumb-brand {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+		filter: saturate(0.35) brightness(0.75);
+		transition:
+			filter 0.4s ease,
+			transform 0.6s ease;
+	}
+
+	/* The title always sits on a dark band, so it stays readable when faded. */
+	.thumb::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to top, color-mix(in srgb, var(--color-green-950) 92%, transparent) 30%, transparent 85%);
+	}
+
+	.thumb:hover img,
+	.thumb:focus-visible img,
+	.thumb[aria-current='true'] img {
+		filter: none;
+	}
+
+	.thumb:hover img {
+		transform: scale(1.05);
+	}
+
+	.thumb[aria-current='true'] {
+		box-shadow: inset 0 3px 0 var(--color-gold);
+	}
+
+	.thumb-text {
+		position: absolute;
+		inset-inline: 0;
+		inset-block-end: 0;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		padding: 8px 12px 10px;
+	}
+
+	.thumb-meta {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--color-gold-light);
+	}
+
+	.thumb-title {
+		overflow: hidden;
+		font-family: var(--font-serif);
+		font-size: 0.9375rem;
+		line-height: 1.25;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	@media (max-width: 40rem) {
+		.slide-content {
+			padding-inline: 24px;
+		}
+
+		.arrows {
+			inset-inline-end: 24px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.slide,
+		.thumb img,
+		.thumb-brand {
+			transition: none;
+		}
+
+		.thumb:hover img {
+			transform: none;
+		}
+	}
+</style>

@@ -1,0 +1,55 @@
+---
+import { site } from '../../data/site';
+const captchaEnabled = import.meta.env.PUBLIC_RECAPTCHA_ENABLED === 'true';
+const siteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ?? '';
+---
+
+<div class="visually-hidden" aria-hidden="true">
+	<label>
+		Leave this blank
+		<input
+			name="bayc_reference_code"
+			type="text"
+			tabindex="-1"
+			autocomplete="off"
+			maxlength="200"
+		/>
+	</label>
+</div>
+<input type="hidden" name="started_at" value={Date.now()} />
+<input type="hidden" name="captcha_enabled" value={String(captchaEnabled)} />
+<input type="hidden" name="captcha_site_key" value={siteKey} />
+{captchaEnabled && (
+	<p class="form-notice">
+		Protected by reCAPTCHA -
+		<a href="https://policies.google.com/privacy">Google Privacy Policy</a>{' '}
+		&amp;
+		<a href="https://policies.google.com/terms">Terms</a> apply.
+	</p>
+)}
+<noscript>
+	<p>
+		JavaScript is needed to submit this form. Email{' '}
+		<a href={`mailto:${site.email}`}>{site.email}</a>.
+	</p>
+</noscript>
+<script>
+	import '../../scripts/forms';
+</script>
+<style is:global>
+	[data-form] .field-error {
+		color: #9b2525;
+		font-size: var(--text-sm);
+	}
+	[data-form] .field-error:empty {
+		display: none;
+	}
+	[data-form] [aria-invalid='true'] {
+		outline: 2px solid #9b2525;
+		outline-offset: 3px;
+	}
+	[data-form] .form-notice {
+		font-size: var(--text-sm);
+		color: var(--color-text-secondary);
+	}
+</style>

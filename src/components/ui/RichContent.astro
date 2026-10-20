@@ -1,0 +1,436 @@
+---
+import Button from './Button.astro';
+import RichImage from './RichImage.astro';
+import RichTextRuns from './RichTextRuns.astro';
+import { blocksText, type ArticleBlock } from '../../data/richContent';
+
+// Renders content written in the CMS block editor (articles, statements,
+// bios) in the site's styles. Recurses for nested content such as lists,
+// quotes, table cells and collapsible sections.
+interface Props {
+	blocks: readonly ArticleBlock[];
+	// Gallery photos open in the page's <Lightbox>.
+	enlargeGalleries?: boolean;
+	// Quotes get a "Copy quote" button.
+	copyableQuotes?: boolean;
+}
+
+const { blocks, enlargeGalleries = false, copyableQuotes = false } = Astro.props;
+const nested = { enlargeGalleries, copyableQuotes };
+---
+
+<div class="rich-content">
+	{
+		blocks.map((block) => {
+			switch (block.kind) {
+				case 'paragraph':
+					return (
+						<p>
+							<RichTextRuns runs={block.runs} />
+						</p>
+					);
+				case 'heading':
+					return block.level === 2 ? (
+						<h2>
+							<RichTextRuns runs={block.runs} />
+						</h2>
+					) : block.level === 3 ? (
+						<h3>
+							<RichTextRuns runs={block.runs} />
+						</h3>
+					) : (
+						<h4>
+							<RichTextRuns runs={block.runs} />
+						</h4>
+					);
+				case 'list': {
+					const listItems = block.items.map((item) => (
+						<li>
+							<Astro.self blocks={item} {...nested} />
+						</li>
+					));
+					return block.ordered ? <ol>{listItems}</ol> : <ul>{listItems}</ul>;
+				}
+				case 'quote':
+					return (
+						<figure class="quote" data-copy-scope={copyableQuotes ? '' : undefined}>
+							<blockquote>
+								<Astro.self blocks={block.blocks} />
+							</blockquote>
+							{block.attribution && (
+								<figcaption class="attribution">
+									<RichTextRuns runs={block.attribution} />
+								</figcaption>
+							)}
+							{copyableQuotes && (
+								<div class="quote-actions">
+									<button type="button" class="copy-quote" data-copy={blocksText(block.blocks)} data-copy-done="Quote copied">
+										Copy quote
+									</button>
+									<span class="copy-status" aria-live="polite" data-copy-status />
+								</div>
+							)}
+						</figure>
+					);
+				case 'code':
+					// On one line: whitespace inside <pre> would show on the page.
+					return <pre><code>{block.text}</code></pre>;
+				case 'image':
+					return <RichImage image={block.image} />;
+				case 'caption':
+					return (
+						<p class="caption">
+							<RichTextRuns runs={block.runs} />
+						</p>
+					);
+				case 'gallery':
+					return enlargeGalleries ? (
+						<div class="gallery-block">
+							<ul role="list" class="gallery">
+								{block.images.map((image) => (
+									<li>
+										<button
+											type="button"
+											class="enlarge"
+											aria-label={image.alt ? `Enlarge photo: ${image.alt}` : 'Enlarge photo'}
+											data-lightbox-src={image.src}
+											data-lightbox-alt={image.alt}
+										>
+											<img src={image.src} alt={image.alt} width={image.width} height={image.height} loading="lazy" />
+										</button>
+									</li>
+								))}
+							</ul>
+							<p class="caption">Select any photo to enlarge.</p>
+						</div>
+					) : (
+						<ul role="list" class="gallery">
+							{block.images.map((image) => (
+								<li>
+									<RichImage image={image} />
+								</li>
+							))}
+						</ul>
+					);
+				case 'video':
+					return (
+						<div class="video">
+							{block.player === 'embed' ? (
+								<iframe
+									src={block.src}
+									title={block.title}
+									allow="encrypted-media; picture-in-picture; fullscreen"
+									allowfullscreen
+									referrerpolicy="strict-origin-when-cross-origin"
+									loading="lazy"
+								/>
+							) : (
+								<video src={block.src} title={block.title} controls preload="metadata" />
+							)}
+						</div>
+					);
+				case 'button':
+					return (
+						<div class="button-row">
+							<Button href={block.href} variant="green">
+								{block.label}
+							</Button>
+						</div>
+					);
+				case 'table':
+					return (
+						<div class="table-scroll" role="region" aria-label="Table" tabindex="0">
+							<table>
+								<tbody>
+									{block.rows.map((row) => (
+										<tr>
+											{row.map((cell) =>
+												cell.header ? (
+													<th scope={cell.header} colspan={cell.colspan} rowspan={cell.rowspan}>
+														<Astro.self blocks={cell.blocks} {...nested} />
+													</th>
+												) : (
+													<td colspan={cell.colspan} rowspan={cell.rowspan}>
+														<Astro.self blocks={cell.blocks} {...nested} />
+													</td>
+												),
+											)}
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					);
+				case 'collapsible':
+					return (
+						<div class="collapsible">
+							{block.items.map((item, index) => (
+								<details open={block.openAll || (block.openFirst && index === 0)}>
+									<summary>
+										<RichTextRuns runs={item.title} />
+									</summary>
+									<div class="collapsible-body">
+										<Astro.self blocks={item.body} {...nested} />
+									</div>
+								</details>
+							))}
+						</div>
+					);
+				case 'divider':
+					return <hr />;
+			}
+		})
+	}
+</div>
+
+<script>
+	import '../../scripts/copy';
+</script>
+
+<style>
+	/* Text size comes from where it's placed: large in articles, smaller in bios. */
+	.rich-content {
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
+		min-inline-size: 0;
+	}
+
+	h2,
+	h3,
+	h4 {
+		margin-block-start: 16px;
+		font-family: var(--font-serif);
+		font-weight: 500;
+		line-height: 1.2;
+		color: var(--color-green-800);
+	}
+
+	h2 {
+		font-size: 1.6em;
+	}
+
+	h3 {
+		font-size: 1.3em;
+	}
+
+	h4 {
+		font-size: 1.1em;
+	}
+
+	ul:not(.gallery),
+	ol {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5em;
+		padding-inline-start: 1.25em;
+	}
+
+	ul:not(.gallery) {
+		list-style: disc;
+	}
+
+	ol {
+		list-style: decimal;
+	}
+
+	blockquote {
+		margin-block: 0.5em;
+		padding-block: 6px;
+		padding-inline-start: 28px;
+		border-inline-start: 4px solid var(--color-gold);
+		font-family: var(--font-serif);
+		font-size: 1.35em;
+		font-style: italic;
+		line-height: 1.4;
+		color: var(--color-green-800);
+	}
+
+	.quote {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.attribution {
+		padding-inline-start: 32px;
+		font-family: var(--font-sans);
+		font-size: 0.75em;
+		color: var(--color-text-muted);
+	}
+
+	.quote-actions {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding-inline-start: 32px;
+	}
+
+	.copy-quote {
+		min-block-size: var(--tap-target);
+		padding: 0;
+		background: none;
+		border: 0;
+		color: var(--color-bronze);
+		font-family: var(--font-sans);
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-color: var(--color-gold);
+		text-underline-offset: 4px;
+		cursor: pointer;
+	}
+
+	.copy-quote:hover {
+		color: var(--color-green-950);
+	}
+
+	.copy-status {
+		font-family: var(--font-sans);
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--color-bronze);
+	}
+
+	pre {
+		overflow-x: auto;
+		padding: 20px 24px;
+		background: var(--color-sand);
+		border-radius: var(--radius);
+		font-size: 0.8em;
+		line-height: 1.6;
+	}
+
+	.caption {
+		margin-block-start: -0.5em;
+		font-family: var(--font-sans);
+		font-size: 0.75em;
+		color: var(--color-text-muted);
+	}
+
+	.gallery-block {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.gallery {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+		gap: 12px;
+	}
+
+	.gallery :global(img) {
+		aspect-ratio: 4 / 3;
+		object-fit: cover;
+	}
+
+	.enlarge {
+		display: block;
+		inline-size: 100%;
+		padding: 0;
+		overflow: hidden;
+		background: none;
+		border: 0;
+		border-radius: var(--radius);
+		cursor: zoom-in;
+	}
+
+	.enlarge img {
+		display: block;
+		inline-size: 100%;
+		block-size: auto;
+		transition: transform 0.5s ease;
+	}
+
+	.enlarge:hover img {
+		transform: scale(1.05);
+	}
+
+	.video {
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		border-radius: var(--radius);
+		background: var(--color-green-950);
+	}
+
+	.video iframe,
+	.video video {
+		display: block;
+		inline-size: 100%;
+		block-size: 100%;
+		border: 0;
+	}
+
+	.button-row {
+		display: flex;
+	}
+
+	.table-scroll {
+		overflow-x: auto;
+	}
+
+	table {
+		inline-size: 100%;
+		border-collapse: collapse;
+	}
+
+	th,
+	td {
+		padding: 12px 16px;
+		border: 1px solid var(--color-rule);
+		font-size: 0.85em;
+		text-align: start;
+		vertical-align: top;
+	}
+
+	th {
+		background: var(--color-sand);
+		font-weight: 600;
+	}
+
+	.collapsible {
+		border-block-start: 1px solid var(--color-rule);
+	}
+
+	details {
+		border-block-end: 1px solid var(--color-rule);
+	}
+
+	summary {
+		display: flex;
+		align-items: center;
+		min-block-size: var(--tap-target);
+		padding-block: 16px;
+		font-family: var(--font-serif);
+		font-size: 1.2em;
+		color: var(--color-green-800);
+		cursor: pointer;
+	}
+
+	summary::after {
+		content: '+';
+		margin-inline-start: auto;
+		padding-inline-start: 16px;
+		color: var(--color-bronze);
+	}
+
+	details[open] summary::after {
+		content: '−';
+	}
+
+	.collapsible-body {
+		padding-block-end: 20px;
+	}
+
+	hr {
+		border: 0;
+		border-block-start: 1px solid var(--color-rule);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.enlarge img {
+			transition: none;
+		}
+	}
+</style>

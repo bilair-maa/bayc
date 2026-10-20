@@ -1,38 +1,45 @@
-// Public member directory. Only members who opted in belong here, and contact
-// details are never listed: introductions go through BAYC.
-// Bracketed values are placeholders until real, consented entries exist.
-
-export const memberFields = [
-	'Law',
-	'Medicine & Health',
-	'Engineering & Technology',
-	'Business & Finance',
-	'Public Service',
-	'Education',
-	'Arts & Media',
-] as const;
-
-export type MemberField = (typeof memberFields)[number];
+// Public member directory, managed in the Wix CMS "Members" collection.
+// Only members who agreed to be listed are entered there, and contact details
+// are never stored: introductions go through BAYC.
+import { collections, queryCollection, readId, readImage, readText, type CmsImage, type CmsRecord } from './cms';
 
 export interface DirectoryMember {
 	id: string;
 	name: string;
-	city: string;
-	field: MemberField;
-	profession: string;
+	profession?: string;
+	field?: string;
+	city?: string;
+	photo?: CmsImage;
 }
 
-export const members: readonly DirectoryMember[] = [
-	{ id: 'm1', name: '[Member Name]', city: '[City, State]', field: 'Law', profession: '[Profession, e.g. Attorney]' },
-	{ id: 'm2', name: '[Member Name]', city: '[City, State]', field: 'Medicine & Health', profession: '[Profession, e.g. Physician]' },
-	{ id: 'm3', name: '[Member Name]', city: '[City, State]', field: 'Engineering & Technology', profession: '[Profession, e.g. Software Engineer]' },
-	{ id: 'm4', name: '[Member Name]', city: '[City, State]', field: 'Business & Finance', profession: '[Profession, e.g. Accountant]' },
-	{ id: 'm5', name: '[Member Name]', city: '[City, State]', field: 'Public Service', profession: '[Profession, e.g. City Planner]' },
-	{ id: 'm6', name: '[Member Name]', city: '[City, State]', field: 'Education', profession: '[Profession, e.g. High School Teacher]' },
-	{ id: 'm7', name: '[Member Name]', city: '[City, State]', field: 'Arts & Media', profession: '[Profession, e.g. Journalist]' },
-	{ id: 'm8', name: '[Member Name]', city: '[City, State]', field: 'Medicine & Health', profession: '[Profession, e.g. Pharmacist]' },
-	{ id: 'm9', name: '[Member Name]', city: '[City, State]', field: 'Engineering & Technology', profession: '[Profession, e.g. Civil Engineer]' },
-	{ id: 'm10', name: '[Member Name]', city: '[City, State]', field: 'Law', profession: '[Profession, e.g. Paralegal]' },
-	{ id: 'm11', name: '[Member Name]', city: '[City, State]', field: 'Business & Finance', profession: '[Profession, e.g. Small Business Owner]' },
-	{ id: 'm12', name: '[Member Name]', city: '[City, State]', field: 'Public Service', profession: '[Profession, e.g. Legislative Aide]' },
-];
+// Twice the rendered 88×110 box, for high-density screens.
+const photoBox = { width: 176, height: 220 };
+const maxMembers = 1000;
+
+function toMember(record: CmsRecord): DirectoryMember | undefined {
+	const id = readId(record);
+	const name = readText(record, 'name');
+	if (!id || !name) return undefined;
+	return {
+		id,
+		name,
+		profession: readText(record, 'profession'),
+		field: readText(record, 'field'),
+		city: readText(record, 'city'),
+		photo: readImage(record, 'photo', photoBox),
+	};
+}
+
+export async function getDirectoryMembers(): Promise<readonly DirectoryMember[]> {
+	const records = await queryCollection(collections.members, {
+		sorts: [{ field: 'name', direction: 'ascending' }],
+		limit: maxMembers,
+	});
+	return records.map(toMember).filter((member) => member !== undefined);
+}
+
+// Filter options come from the fields members actually list, so no filter is ever empty.
+export function fieldsOf(members: readonly DirectoryMember[]): readonly string[] {
+	const fields = new Set(members.map((member) => member.field).filter((field) => field !== undefined));
+	return [...fields].sort((a, b) => a.localeCompare(b, 'en'));
+}

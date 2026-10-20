@@ -1,46 +1,64 @@
 ---
 import Button from '../ui/Button.astro';
+import FormProtection from '../ui/FormProtection.astro';
 
-// Not yet connected to a backend. The submit button stays disabled (which also
-// blocks Enter-to-submit) until the form is wired to Wix, so visitors are never
-// shown a button that silently does nothing.
-const topics = [
-	{ value: 'general', label: 'General', description: 'Questions about BAYC' },
-	{ value: 'membership', label: 'Membership', description: 'Joining or your application' },
-	{ value: 'mentorship', label: 'Mentorship Introduction', description: 'Connect with a member' },
-	{ value: 'partnership', label: 'Partnership', description: 'Organizations & institutions' },
-	{ value: 'media', label: 'Media', description: 'Press and interviews' },
-] as const;
+import { topics, formFields } from '../../data/formFields';
 ---
 
-<form class="contact-form" aria-labelledby="contact-form-heading" aria-describedby="contact-status">
+<form
+	data-form="contact"
+	method="post"
+	action="/api/forms/contact"
+	class="contact-form"
+	aria-labelledby="contact-form-heading"
+	aria-describedby="contact-status"
+>
 	<h2 id="contact-form-heading">Send a Message</h2>
 
-	<fieldset>
+	<fieldset aria-describedby="contact-topic-error">
 		<legend>What is this about?</legend>
 		<div class="topics">
-			{
-				topics.map((topic, index) => (
-					<label class="topic">
-						<input
-							class="visually-hidden"
-							type="radio"
-							name="topic"
-							value={topic.value}
-							checked={index === 0}
-						/>
-						<span class="topic-label">{topic.label}</span>
-						<span class="topic-description">{topic.description}</span>
-					</label>
-				))
-			}
+			{topics.map((topic, index) => (
+				<label class="topic">
+					<input
+						class="visually-hidden"
+						type="radio"
+						name="topic"
+						value={topic.value}
+						checked={index === 0}
+						required
+					/>
+					<span class="topic-label">{topic.label}</span>
+					<span class="topic-description">{topic.description}</span>
+				</label>
+			))}
 		</div>
+		<span
+			class="field-error"
+			id="contact-topic-error"
+			data-error="topic"
+			role="alert"
+		></span>
 	</fieldset>
 
 	<div class="field-row">
 		<label class="field">
 			Name
-			<input class="input" type="text" name="name" autocomplete="name" required />
+			<input
+				class="input"
+				type="text"
+				name="name"
+				autocomplete="name"
+				required
+				aria-describedby="contact-name-error"
+				maxlength={formFields.contact.name.maxLength}
+			/>
+			<span
+				class="field-error"
+				id="contact-name-error"
+				data-error="name"
+				role="alert"
+			></span>
 		</label>
 		<label class="field">
 			Email
@@ -51,21 +69,49 @@ const topics = [
 				autocomplete="email"
 				placeholder="you@example.com"
 				required
+				aria-describedby="contact-email-error"
+				maxlength={formFields.contact.email.maxLength}
 			/>
+			<span
+				class="field-error"
+				id="contact-email-error"
+				data-error="email"
+				role="alert"
+			></span>
 		</label>
 	</div>
 
 	<label class="field">
 		Message
-		<textarea class="input message" name="message" rows="5" required></textarea>
+		<textarea
+			class="input message"
+			name="message"
+			rows="5"
+			required
+			aria-describedby="contact-message-error"
+			maxlength={formFields.contact.message.maxLength}
+		></textarea>
+		<span
+			class="field-error"
+			id="contact-message-error"
+			data-error="message"
+			role="alert"
+		></span>
 	</label>
 
 	<div class="submit-row">
-		<Button type="submit" variant="green" disabled>Send Message</Button>
-		<p id="contact-status" class="status">
-			Messages open soon. Until then, email us directly.
-		</p>
+		<Button type="submit" variant="green" disabled>
+			Send Message
+		</Button>
+		<p
+			id="contact-status"
+			class="status"
+			data-form-status
+			role="status"
+			aria-live="polite"
+		></p>
 	</div>
+	<FormProtection />
 </form>
 
 <style>

@@ -3,8 +3,10 @@ import MemberDirectory from '../components/members/MemberDirectory.astro';
 import Button from '../components/ui/Button.astro';
 import RotatingWords from '../components/ui/RotatingWords.astro';
 import Layout from '../layouts/Layout.astro';
+import { getDirectoryMembers } from '../data/members';
 import { applyHref, routes } from '../data/site';
 
+const members = await getDirectoryMembers();
 const directoryId = 'directory';
 
 const fieldsInHeadline = [
@@ -29,12 +31,24 @@ const fieldsInHeadline = [
 		</p>
 		<div class="actions">
 			<Button href={routes.contact} variant="green">Request an Introduction</Button>
-			<Button href={`#${directoryId}`} variant="outline-green">Browse the Directory</Button>
+			{
+				members.length > 0 && (
+					<Button href={`#${directoryId}`} variant="outline-green">
+						Browse the Directory
+					</Button>
+				)
+			}
 		</div>
 	</section>
 
 	<section id={directoryId} class="container directory" aria-label="Member directory">
-		<MemberDirectory />
+		{
+			members.length > 0 ? (
+				<MemberDirectory members={members} />
+			) : (
+				<p class="coming-soon">Our member directory is coming soon.</p>
+			)
+		}
 		<div class="listing-cta">
 			<p>Are you a member who'd like to be listed?</p>
 			<a href={applyHref} class="text-link add-profile">Add Your Profile</a>
@@ -81,6 +95,12 @@ const fieldsInHeadline = [
 	.directory {
 		padding-block: 40px var(--space-section);
 		border-block-start: 1px solid var(--color-rule);
+	}
+
+	.coming-soon {
+		font-family: var(--font-serif);
+		font-size: 1.75rem;
+		color: var(--color-green-800);
 	}
 
 	.listing-cta {

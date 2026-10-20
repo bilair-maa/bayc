@@ -1,0 +1,144 @@
+---
+import { formatDate, type Story } from '../../data/news';
+import { routes } from '../../data/site';
+
+// "More News & Events" cards at the foot of a story or event.
+interface Props {
+	stories: readonly Story[];
+}
+
+const { stories } = Astro.props;
+---
+
+{
+	stories.length > 0 && (
+		<section class="container related" aria-labelledby="related-heading">
+			<div class="related-header">
+				<h2 id="related-heading">More News &amp; Events</h2>
+				<a href={`${routes.news}#news`} class="see-all">
+					See All
+				</a>
+			</div>
+			<ul role="list" class="related-grid">
+				{stories.map((story) => (
+					<li>
+						<a href={story.href} class="card">
+							<div class="media">
+								{story.image ? (
+									<img src={story.image.src} alt="" width={story.image.width} height={story.image.height} loading="lazy" />
+								) : (
+									<div class="media-brand">
+										<img src="/images/bayc-seal.png" alt="" width="96" height="96" loading="lazy" />
+									</div>
+								)}
+							</div>
+							<span class="meta">
+								{story.type} · <time datetime={story.date}>{formatDate(story.date)}</time>
+							</span>
+							<span class="title">{story.title}</span>
+						</a>
+					</li>
+				))}
+			</ul>
+		</section>
+	)
+}
+
+<style>
+	.related {
+		padding-block-end: var(--space-section);
+	}
+
+	.related-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px 32px;
+		margin-block-end: 28px;
+		padding-block-start: 40px;
+		border-block-start: 2px solid var(--color-green-800);
+	}
+
+	h2 {
+		font-family: var(--font-serif);
+		font-size: clamp(2rem, 3.4vw, 2.75rem);
+		font-weight: 500;
+		color: var(--color-green-800);
+	}
+
+	.see-all {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--tap-target);
+		font-weight: 700;
+		text-decoration-color: var(--color-gold);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+	}
+
+	.related-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+		gap: 32px;
+	}
+
+	.card {
+		display: flex;
+		flex-direction: column;
+		color: var(--color-ink);
+		text-decoration: none;
+	}
+
+	.media {
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		border-radius: var(--radius);
+	}
+
+	.media > img {
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+		transition: transform 0.6s ease;
+	}
+
+	.card:hover .media > img {
+		transform: scale(1.06);
+	}
+
+	.media-brand {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		block-size: 100%;
+		background: var(--color-green-800);
+	}
+
+	.meta {
+		margin-block-start: 16px;
+		font-size: var(--text-xs);
+		font-weight: 600;
+		color: var(--color-bronze);
+	}
+
+	.title {
+		margin-block-start: 6px;
+		font-family: var(--font-serif);
+		font-size: 1.5625rem;
+		line-height: 1.25;
+		color: var(--color-green-800);
+	}
+
+	.card:hover .title {
+		text-decoration: underline;
+		text-decoration-color: var(--color-gold);
+		text-underline-offset: 5px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.media > img {
+			transition: none;
+		}
+	}
+</style>

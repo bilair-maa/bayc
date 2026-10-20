@@ -1,10 +1,11 @@
 ---
-import HeadshotPlaceholder from '../ui/HeadshotPlaceholder.astro';
+import Headshot from '../ui/Headshot.astro';
 import ReadMore from '../ui/ReadMore.astro';
-import type { CouncilMember } from '../../data/leadership';
+import RichContent from '../ui/RichContent.astro';
+import type { Leader } from '../../data/leadership';
 
 interface Props {
-	advisor: CouncilMember;
+	advisor: Leader;
 }
 
 const { advisor } = Astro.props;
@@ -12,19 +13,29 @@ const { advisor } = Astro.props;
 
 <article class="advisor">
 	<div class="photo">
-		<HeadshotPlaceholder iconSize={44} />
+		<Headshot name={advisor.name} photo={advisor.photo} initialsSize={34} />
 	</div>
 	<div class="details">
 		<h3>
 			{advisor.name}
-			<span class="divider" aria-hidden="true">|</span>
-			<span class="city">{advisor.city}</span>
+			{
+				advisor.city && (
+					<>
+						<span class="divider" aria-hidden="true">|</span>
+						<span class="city">{advisor.city}</span>
+					</>
+				)
+			}
 		</h3>
-		<p class="title">{advisor.title}</p>
-		<p>{advisor.shortBio}</p>
-		<ReadMore id={advisor.id}>
-			<p>{advisor.fullBio}</p>
-		</ReadMore>
+		{advisor.title && <p class="title">{advisor.title}</p>}
+		{advisor.shortBio && <p>{advisor.shortBio}</p>}
+		{
+			advisor.fullBio.length > 0 && (
+				<ReadMore id={advisor.id}>
+					<RichContent blocks={advisor.fullBio} />
+				</ReadMore>
+			)
+		}
 	</div>
 </article>
 

@@ -1,0 +1,43 @@
+---
+import EventStory from '../../components/news/EventStory.astro';
+import NewsStory from '../../components/news/NewsStory.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getRelatedStories, getStoryArticle } from '../../data/news';
+import { routes } from '../../data/site';
+
+// A News & Events story or event, written in the CMS. Drafts and unknown ids
+// aren't readable by visitors, so both end up as "not found".
+const id = Astro.params.id ?? '';
+const [story, related] = await Promise.all([getStoryArticle(id), getRelatedStories(id)]);
+if (!story) Astro.response.status = 404;
+const now = new Date();
+---
+
+<Layout pageTitle={story?.title ?? 'Story Not Found'}>
+	{
+		story?.type === 'News' ? (
+			<NewsStory story={story} related={related} />
+		) : story?.type === 'Event' ? (
+			<EventStory event={story} related={related} now={now} />
+		) : (
+			<section class="container not-found" aria-labelledby="not-found-heading">
+				<h1 id="not-found-heading" class="page-title">
+					Story not found
+				</h1>
+				<p>This story may have been moved or is no longer available.</p>
+				<a href={routes.news}>Back to News &amp; Events</a>
+			</section>
+		)
+	}
+</Layout>
+
+<style>
+	.not-found {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+		padding-block: 96px var(--space-section);
+		font-size: var(--text-xl);
+	}
+</style>

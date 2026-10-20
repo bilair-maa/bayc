@@ -13,9 +13,22 @@ export const site = {
 	email: 'info@baycusa.org',
 	location: 'New York, NY',
 	domain: 'baycusa.org',
-	// Placeholders until the social profiles exist.
-	socialPlaceholders: ['[Instagram]', '[Facebook]', '[LinkedIn]'],
 } as const;
+
+export type SocialNetwork = 'instagram' | 'facebook' | 'linkedin';
+
+export interface SocialProfile {
+	network: SocialNetwork;
+	label: string;
+	// Set once the profile exists; until then the icon shows without a link.
+	href?: string;
+}
+
+export const socialProfiles: readonly SocialProfile[] = [
+	{ network: 'instagram', label: 'Instagram' },
+	{ network: 'facebook', label: 'Facebook' },
+	{ network: 'linkedin', label: 'LinkedIn' },
+];
 
 export const routes = {
 	home: '/',
@@ -27,6 +40,18 @@ export const routes = {
 	news: '/news',
 	contact: '/contact',
 } as const;
+
+export function storyHref(storyId: string): string {
+	return `${routes.news}/${storyId}`;
+}
+
+export function statementHref(statementId: string): string {
+	return `${routes.news}/statements/${statementId}`;
+}
+
+export function storyCalendarHref(storyId: string): string {
+	return `${storyHref(storyId)}/calendar.ics`;
+}
 
 // Anchor id of the application form on the Membership page.
 export const membershipApplyId = 'apply';
@@ -53,6 +78,6 @@ export const siteNav: readonly NavLink[] = [
 	{ label: 'Leadership', href: routes.leadership },
 	{ label: 'Membership', href: routes.membership },
 	{ label: 'Directory', href: routes.directory },
-	{ label: 'News & Statements', href: routes.news },
+	{ label: 'News & Events', href: routes.news },
 	{ label: 'Contact', href: routes.contact },
 ];

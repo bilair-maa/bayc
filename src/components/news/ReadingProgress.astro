@@ -1,0 +1,46 @@
+---
+// A thin bar along the top of the window showing how far the reader has scrolled.
+---
+
+<div class="progress" aria-hidden="true" data-reading-progress></div>
+
+<script>
+	const bar = document.querySelector<HTMLElement>('[data-reading-progress]');
+	if (bar) {
+		let queued = false;
+		const update = () => {
+			queued = false;
+			const root = document.documentElement;
+			const scrollable = root.scrollHeight - root.clientHeight;
+			const fraction = scrollable > 0 ? Math.min(1, root.scrollTop / scrollable) : 0;
+			bar.style.transform = `scaleX(${fraction})`;
+		};
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (queued) return;
+				queued = true;
+				window.requestAnimationFrame(update);
+			},
+			{ passive: true },
+		);
+		update();
+	}
+</script>
+
+<style>
+	.progress {
+		position: fixed;
+		inset-block-start: 0;
+		inset-inline: 0;
+		z-index: 50;
+		block-size: 4px;
+		background: var(--color-gold);
+		transform: scaleX(0);
+		transform-origin: left;
+	}
+
+	:global([dir='rtl']) .progress {
+		transform-origin: right;
+	}
+</style>

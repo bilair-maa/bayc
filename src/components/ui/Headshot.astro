@@ -1,0 +1,62 @@
+---
+import type { CmsImage } from '../../data/cms';
+
+// A person's photo, or their initials when no photo has been added. The parent
+// sets the box size; set --headshot-bg on a section to change the fill.
+interface Props {
+	name: string;
+	photo?: CmsImage;
+	initialsSize: number;
+}
+
+const { name, photo, initialsSize } = Astro.props;
+
+const initials = name
+	.split(/\s+/)
+	.filter((word) => word !== '')
+	.map((word) => Array.from(word)[0] ?? '')
+	.filter((_, index, letters) => index === 0 || index === letters.length - 1)
+	.join('')
+	.toLocaleUpperCase('en');
+---
+
+{
+	photo ? (
+		<img
+			class="headshot"
+			src={photo.src}
+			alt={`Headshot of ${name}`}
+			width={photo.width}
+			height={photo.height}
+			loading="lazy"
+		/>
+	) : (
+		<div class="headshot initials" style={`font-size: ${initialsSize}px`} aria-hidden="true">
+			{initials}
+		</div>
+	)
+}
+
+<style>
+	.headshot {
+		inline-size: 100%;
+		block-size: 100%;
+		border-radius: var(--radius);
+	}
+
+	img.headshot {
+		object-fit: cover;
+		object-position: 50% 30%;
+	}
+
+	.initials {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--headshot-bg, var(--color-placeholder-surface));
+		color: var(--color-green-800);
+		font-family: var(--font-serif);
+		font-weight: 500;
+		letter-spacing: 0.02em;
+	}
+</style>
