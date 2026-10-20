@@ -1,0 +1,98 @@
+---
+import Button from '../ui/Button.astro';
+import StayInformedForm from './StayInformedForm.astro';
+import { audiences } from '../../data/home';
+import { homeSections, routes } from '../../data/site';
+---
+
+<section id={homeSections.contact} class="container get-involved" aria-labelledby="get-involved-heading">
+	<div class="pitch">
+		<h2 id="get-involved-heading">Get Involved</h2>
+		<p>
+			BAYC welcomes people of diverse backgrounds, beliefs and perspectives who share our commitment
+			to democratic values, cultural heritage, public service and community advancement.
+		</p>
+		<ul role="list" class="audiences">
+			{audiences.map((audience) => <li>{audience}</li>)}
+		</ul>
+		<div class="actions">
+			<Button href={routes.membership} variant="green">Become a Member</Button>
+			<a href={routes.membership} class="text-link secondary-action">Volunteer or Partner With Us</a>
+		</div>
+	</div>
+	<StayInformedForm />
+</section>
+
+<style>
+	.get-involved {
+		display: grid;
+		align-items: start;
+		gap: 64px 96px;
+		padding-block: var(--space-section) 128px;
+	}
+
+	@media (min-width: 60rem) {
+		.get-involved {
+			grid-template-columns: minmax(0, 1fr) 380px;
+		}
+	}
+
+	.pitch {
+		display: flex;
+		flex-direction: column;
+		gap: 28px;
+	}
+
+	h2 {
+		max-inline-size: 14ch;
+		font-family: var(--font-serif);
+		font-size: clamp(2.5rem, 4.4vw, 3.75rem);
+		font-weight: 500;
+		line-height: 1.05;
+		color: var(--color-green-800);
+	}
+
+	p {
+		max-inline-size: 36em;
+		font-size: var(--text-xl);
+		line-height: var(--leading-body);
+	}
+
+	.audiences {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 20px;
+		margin-block-start: 8px;
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		color: var(--color-green-800);
+	}
+
+	/*
+	 * Separator trails each item rather than leading the next, so a wrapped
+	 * line never begins with a dot. Empty alt text keeps screen readers quiet;
+	 * browsers without that syntax fall back to the first declaration.
+	 */
+	.audiences li:not(:last-child)::after {
+		content: '·';
+		content: '·' / '';
+		margin-inline-start: 20px;
+		color: var(--color-gold);
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+		margin-block-start: 12px;
+	}
+
+	.secondary-action {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--tap-target-lg);
+		padding-inline: 12px;
+		font-size: var(--text-md);
+		font-weight: 600;
+	}
+</style>

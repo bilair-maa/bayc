@@ -1,0 +1,147 @@
+---
+import Button from '../ui/Button.astro';
+import { homeSectionHref, routes, site } from '../../data/site';
+---
+
+<section class="hero" aria-labelledby="hero-heading">
+	<div class="media" aria-hidden="true">
+		<img
+			class="photo-right"
+			src="/images/hero-new-york-skyline.jpg"
+			alt=""
+			width="2576"
+			height="1640"
+			fetchpriority="high"
+		/>
+		<img
+			class="photo-left"
+			src="/images/hero-bangladesh-rice-fields.jpg"
+			alt=""
+			width="2576"
+			height="1932"
+			fetchpriority="high"
+		/>
+		<div class="tint"></div>
+	</div>
+	<div class="container content">
+		<p class="tagline">{site.tagline}</p>
+		<h1 id="hero-heading">Empowering the Next Generation of Bangladeshi Americans</h1>
+		<p class="lede">
+			BAYC brings together students, young professionals, emerging leaders, and community members
+			to strengthen civic engagement, develop future leaders, and build a stronger, more connected
+			Bangladeshi-American community.
+		</p>
+		<div class="actions">
+			<Button href={routes.membership} variant="gold">Become a Member</Button>
+			<Button href={homeSectionHref('mission')} variant="outline">Read Our Mission</Button>
+		</div>
+	</div>
+</section>
+
+<style>
+	/*
+	 * Two photos overlap in the middle and the browser blends them: the
+	 * Bangladesh photo fades out over the New York photo through a mask.
+	 * To swap a photo, change its file and retune these variables.
+	 */
+	.hero {
+		/* Width of each photo; above 50% creates the overlap. */
+		--hero-photo-width: 60%;
+		/* Share of the left photo's own width that fades out. */
+		--hero-fade: 34%;
+		--hero-left-position: 100% 62%;
+		--hero-right-position: 4% 48%;
+		/* Green overlay strength that keeps the text readable over the photos (0.2-0.8). */
+		--hero-tint: 0.5;
+		--focus-ring-color: var(--color-gold-light);
+
+		position: relative;
+		overflow: hidden;
+		background: var(--color-green-800);
+		color: var(--color-cream);
+		border-block-end: 6px solid var(--color-gold);
+	}
+
+	.media {
+		position: absolute;
+		inset: 0;
+	}
+
+	/* Physical left/right on purpose: the composition and mask direction are art direction, not reading direction. */
+	.media img {
+		position: absolute;
+		top: 0;
+		inline-size: var(--hero-photo-width);
+		block-size: 100%;
+		object-fit: cover;
+	}
+
+	.photo-right {
+		right: 0;
+		object-position: var(--hero-right-position);
+	}
+
+	.photo-left {
+		left: 0;
+		object-position: var(--hero-left-position);
+		mask-image: linear-gradient(
+			to right,
+			black calc(100% - var(--hero-fade)),
+			rgb(0 0 0 / 50%) calc(100% - var(--hero-fade) / 2),
+			transparent 100%
+		);
+	}
+
+	@media (max-width: 700px) {
+		.hero {
+			--hero-photo-width: 72%;
+			--hero-fade: 45%;
+			--hero-tint: 0.58;
+		}
+	}
+
+	.tint {
+		position: absolute;
+		inset: 0;
+		background: var(--color-green-950);
+		opacity: var(--hero-tint);
+	}
+
+	.content {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 28px;
+		padding-block: 128px 144px;
+	}
+
+	.tagline {
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		font-style: italic;
+		color: var(--color-gold-light);
+	}
+
+	h1 {
+		max-inline-size: 15ch;
+		font-family: var(--font-serif);
+		font-size: clamp(2.75rem, 6.4vw, 5.25rem);
+		font-weight: 500;
+		line-height: 1.02;
+		letter-spacing: -0.015em;
+	}
+
+	.lede {
+		max-inline-size: 40em;
+		font-size: var(--text-lg);
+		line-height: 1.6;
+		color: var(--color-on-dark-soft);
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+		margin-block-start: 8px;
+	}
+</style>

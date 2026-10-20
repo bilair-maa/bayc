@@ -1,0 +1,79 @@
+---
+import HeadshotPlaceholder from '../ui/HeadshotPlaceholder.astro';
+import ReadMore from '../ui/ReadMore.astro';
+import type { CouncilMember } from '../../data/leadership';
+
+interface Props {
+	advisor: CouncilMember;
+}
+
+const { advisor } = Astro.props;
+---
+
+<article class="advisor">
+	<div class="photo">
+		<HeadshotPlaceholder iconSize={44} />
+	</div>
+	<div class="details">
+		<h3>
+			{advisor.name}
+			<span class="divider" aria-hidden="true">|</span>
+			<span class="city">{advisor.city}</span>
+		</h3>
+		<p class="title">{advisor.title}</p>
+		<p>{advisor.shortBio}</p>
+		<ReadMore id={advisor.id}>
+			<p>{advisor.fullBio}</p>
+		</ReadMore>
+	</div>
+</article>
+
+<style>
+	.advisor {
+		display: flex;
+		align-items: flex-start;
+		gap: 24px;
+		padding-block: 32px;
+		border-block-end: 1px solid var(--color-rule);
+	}
+
+	.photo {
+		flex: none;
+		inline-size: 112px;
+		block-size: 140px;
+	}
+
+	.details {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		min-inline-size: 0;
+		font-size: var(--text-md);
+		line-height: 1.6;
+	}
+
+	h3 {
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		font-weight: 600;
+		line-height: 1.2;
+		color: var(--color-green-800);
+	}
+
+	.divider {
+		font-weight: 400;
+		color: var(--color-gold);
+	}
+
+	.city {
+		font-size: var(--text-md);
+		font-weight: 400;
+		color: var(--color-text-secondary);
+	}
+
+	.title {
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-bronze);
+	}
+</style>

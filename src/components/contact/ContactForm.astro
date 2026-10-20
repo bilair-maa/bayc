@@ -1,0 +1,182 @@
+---
+import Button from '../ui/Button.astro';
+
+// Not yet connected to a backend. The submit button stays disabled (which also
+// blocks Enter-to-submit) until the form is wired to Wix, so visitors are never
+// shown a button that silently does nothing.
+const topics = [
+	{ value: 'general', label: 'General', description: 'Questions about BAYC' },
+	{ value: 'membership', label: 'Membership', description: 'Joining or your application' },
+	{ value: 'mentorship', label: 'Mentorship Introduction', description: 'Connect with a member' },
+	{ value: 'partnership', label: 'Partnership', description: 'Organizations & institutions' },
+	{ value: 'media', label: 'Media', description: 'Press and interviews' },
+] as const;
+---
+
+<form class="contact-form" aria-labelledby="contact-form-heading" aria-describedby="contact-status">
+	<h2 id="contact-form-heading">Send a Message</h2>
+
+	<fieldset>
+		<legend>What is this about?</legend>
+		<div class="topics">
+			{
+				topics.map((topic, index) => (
+					<label class="topic">
+						<input
+							class="visually-hidden"
+							type="radio"
+							name="topic"
+							value={topic.value}
+							checked={index === 0}
+						/>
+						<span class="topic-label">{topic.label}</span>
+						<span class="topic-description">{topic.description}</span>
+					</label>
+				))
+			}
+		</div>
+	</fieldset>
+
+	<div class="field-row">
+		<label class="field">
+			Name
+			<input class="input" type="text" name="name" autocomplete="name" required />
+		</label>
+		<label class="field">
+			Email
+			<input
+				class="input"
+				type="email"
+				name="email"
+				autocomplete="email"
+				placeholder="you@example.com"
+				required
+			/>
+		</label>
+	</div>
+
+	<label class="field">
+		Message
+		<textarea class="input message" name="message" rows="5" required></textarea>
+	</label>
+
+	<div class="submit-row">
+		<Button type="submit" variant="green" disabled>Send Message</Button>
+		<p id="contact-status" class="status">
+			Messages open soon. Until then, email us directly.
+		</p>
+	</div>
+</form>
+
+<style>
+	.contact-form {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		padding: clamp(28px, 4vw, 48px);
+		background: var(--color-surface);
+		border-block-start: 4px solid var(--color-gold);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow-raised);
+	}
+
+	h2 {
+		font-family: var(--font-serif);
+		font-size: clamp(2rem, 3vw, 2.625rem);
+		font-weight: 500;
+		color: var(--color-green-800);
+	}
+
+	fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	legend {
+		margin-block-end: 12px;
+		padding: 0;
+		font-size: var(--text-sm);
+		font-weight: 600;
+	}
+
+	.topics {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+		gap: 10px;
+	}
+
+	.topic {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		min-block-size: var(--tap-target);
+		padding: 16px 18px;
+		background: var(--color-field);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		cursor: pointer;
+		transition:
+			border-color 0.2s ease,
+			background-color 0.2s ease;
+	}
+
+	.topic:hover {
+		border-color: var(--color-green-800);
+	}
+
+	.topic:has(input:checked) {
+		background: var(--color-green-800);
+		border-color: var(--color-green-800);
+		color: var(--color-cream);
+	}
+
+	/* The radio itself is hidden, so its card shows the keyboard focus. */
+	.topic:has(input:focus-visible) {
+		outline: 3px solid var(--color-gold);
+		outline-offset: 3px;
+	}
+
+	.topic-label {
+		font-family: var(--font-serif);
+		font-size: 1.3125rem;
+		line-height: 1.2;
+	}
+
+	.topic-description {
+		font-size: 0.875rem;
+		color: var(--color-bronze);
+	}
+
+	.topic:has(input:checked) .topic-description {
+		color: var(--color-gold-light);
+	}
+
+	.field-row {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+		gap: 18px;
+	}
+
+	.message {
+		resize: vertical;
+	}
+
+	.submit-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+	}
+
+	.status {
+		font-size: var(--text-sm);
+		color: var(--color-text-secondary);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.topic {
+			transition: none;
+		}
+	}
+</style>

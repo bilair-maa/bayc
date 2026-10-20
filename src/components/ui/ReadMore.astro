@@ -1,0 +1,75 @@
+---
+// Extra content behind a "Read More" toggle. The content is rendered visible
+// and the script collapses it, so it stays readable if JavaScript fails.
+interface Props {
+	id: string;
+}
+
+const { id } = Astro.props;
+const contentId = `${id}-more`;
+---
+
+<div class="read-more" data-read-more>
+	<div id={contentId} class="content" data-read-more-content>
+		<slot />
+	</div>
+	<button
+		type="button"
+		class="toggle"
+		aria-controls={contentId}
+		aria-expanded="true"
+		hidden
+		data-read-more-toggle
+	>
+		Show Less
+	</button>
+</div>
+
+<script>
+	const labels = { collapsed: 'Read More', expanded: 'Show Less' };
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-read-more]')) {
+		const content = root.querySelector<HTMLElement>('[data-read-more-content]');
+		const toggle = root.querySelector<HTMLButtonElement>('[data-read-more-toggle]');
+		if (!content || !toggle) continue;
+
+		const setExpanded = (expanded: boolean) => {
+			content.hidden = !expanded;
+			toggle.setAttribute('aria-expanded', String(expanded));
+			toggle.textContent = expanded ? labels.expanded : labels.collapsed;
+		};
+
+		setExpanded(false);
+		toggle.hidden = false;
+		toggle.addEventListener('click', () => {
+			setExpanded(toggle.getAttribute('aria-expanded') !== 'true');
+		});
+	}
+</script>
+
+<style>
+	.read-more {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.toggle {
+		align-self: flex-start;
+		min-block-size: var(--tap-target);
+		padding: 0;
+		background: none;
+		border: 0;
+		color: var(--color-green-800);
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-color: var(--color-gold);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+		cursor: pointer;
+	}
+
+	.toggle:hover {
+		color: var(--color-green-950);
+	}
+</style>

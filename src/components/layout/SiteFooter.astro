@@ -1,0 +1,108 @@
+---
+import { site, siteNav } from '../../data/site';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="container inner">
+		<div class="columns">
+			<div class="brand">
+				<p class="brand-name">{site.name}</p>
+				<p class="tagline">{site.tagline}</p>
+			</div>
+			<nav aria-label="Footer">
+				<ul role="list" class="link-list">
+					{
+						siteNav.map((item) => (
+							<li>
+								<a href={item.href} class="link-on-dark">
+									{item.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+			<address class="contact">
+				<a href={`mailto:${site.email}`} class="link-on-dark">{site.email}</a>
+				<span>{site.location}</span>
+				<span>{site.socialPlaceholders.join(' · ')}</span>
+			</address>
+		</div>
+		<div class="legal">
+			<p>© {currentYear} {site.name}. {site.descriptor}</p>
+			<p>{site.domain}</p>
+		</div>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		--focus-ring-color: var(--color-gold-light);
+		background: var(--color-green-950);
+		color: var(--color-on-dark);
+	}
+
+	.inner {
+		display: flex;
+		flex-direction: column;
+		gap: 56px;
+		padding-block: 72px 40px;
+	}
+
+	.columns {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 40px 72px;
+		font-size: var(--text-base);
+	}
+
+	.brand {
+		flex: 2 1 340px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.brand-name {
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		font-weight: 600;
+		color: var(--color-cream);
+	}
+
+	.tagline {
+		font-family: var(--font-serif);
+		font-size: var(--text-xl);
+		font-style: italic;
+		color: var(--color-gold-light);
+	}
+
+	nav {
+		flex: 1 1 200px;
+	}
+
+	.link-list,
+	.contact {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.contact {
+		flex: 1 1 220px;
+	}
+
+	.legal {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 12px;
+		padding-block-start: 24px;
+		border-block-start: 1px solid color-mix(in srgb, var(--color-on-dark) 20%, transparent);
+		font-size: var(--text-xs);
+		color: var(--color-on-dark-subtle);
+	}
+</style>

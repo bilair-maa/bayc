@@ -1,0 +1,76 @@
+/*
+ * Design tokens for the BAYC site.
+ * This is the only file that should contain raw color values. Components
+ * reference these custom properties so a palette or type change is made once.
+ */
+:root {
+	/* Brand palette */
+	--color-green-950: #0a2a21;
+	--color-green-800: #123f32;
+	--color-green-700: #1b4d3e;
+	--color-sage: #7fa394;
+	--color-gold: #b49a58;
+	--color-gold-hover: #c8af6d;
+	--color-gold-light: #d2bc82;
+	--color-bronze: #6e5b2a;
+
+	/* Surfaces */
+	--color-cream: #f7f4ea;
+	--color-sand: #ede7d4;
+	--color-surface: #ffffff;
+	--color-field: #fbfaf5;
+	--color-placeholder-surface: #e6dfcb;
+	--color-placeholder-surface-strong: #ded6bf;
+
+	/* Text on light surfaces */
+	--color-ink: #24352d;
+	--color-ink-on-gold: #0e2a22;
+	--color-text-secondary: #3a4b42;
+	--color-text-muted: #4a5a51;
+	--color-text-subtle: #5b6b62;
+	--color-placeholder: #6b7a71;
+
+	/* Text on dark surfaces */
+	--color-on-dark: #e9e3cf;
+	--color-on-dark-soft: #e4dfcd;
+	--color-on-dark-subtle: #bfc7be;
+	--color-on-dark-strong: #ffffff;
+
+	/* Lines */
+	--color-border: #dcd5c0;
+	--color-rule: #cfc7ae;
+	--color-input-border: #a9a28c;
+
+	/* Typography */
+	--font-serif: 'Newsreader', Georgia, serif;
+	--font-sans: 'Public Sans', system-ui, sans-serif;
+	--font-bengali: 'Noto Serif Bengali', serif;
+
+	--text-xs: 0.9375rem; /* 15px */
+	--text-sm: 1rem; /* 16px */
+	--text-base: 1.0625rem; /* 17px */
+	--text-md: 1.125rem; /* 18px */
+	--text-lg: 1.1875rem; /* 19px */
+	--text-xl: 1.25rem; /* 20px */
+	--text-2xl: 1.5rem; /* 24px */
+	--text-3xl: 1.625rem; /* 26px */
+
+	/* Large page titles on inner pages */
+	--text-display: clamp(3.75rem, 8vw, 7rem);
+
+	--leading-body: 1.7;
+
+	/* Layout */
+	--container-max: 1280px;
+	--gutter: 32px;
+	--space-section: 120px;
+	--radius: 2px;
+	--shadow-raised: 0 30px 60px -30px color-mix(in srgb, var(--color-green-950) 55%, transparent);
+
+	/* Minimum interactive target heights */
+	--tap-target: 44px;
+	--tap-target-lg: 48px;
+
+	/* Dark sections override this so the focus ring stays visible */
+	--focus-ring-color: var(--color-green-800);
+}

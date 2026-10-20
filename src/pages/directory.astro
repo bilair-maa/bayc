@@ -1,0 +1,107 @@
+---
+import MemberDirectory from '../components/members/MemberDirectory.astro';
+import Button from '../components/ui/Button.astro';
+import RotatingWords from '../components/ui/RotatingWords.astro';
+import Layout from '../layouts/Layout.astro';
+import { applyHref, routes } from '../data/site';
+
+const directoryId = 'directory';
+
+const fieldsInHeadline = [
+	'Law',
+	'Medicine',
+	'Engineering',
+	'Public Service',
+	'Education',
+	'Business',
+	'the Arts',
+] as const;
+---
+
+<Layout pageTitle="Member Directory">
+	<section class="container hero" aria-labelledby="directory-heading">
+		<h1 id="directory-heading" class="page-title">Our Members</h1>
+		<p class="headline">
+			Bangladeshi Americans in <RotatingWords words={fieldsInHeadline} widthEm={11} />
+		</p>
+		<p class="lede">
+			Find someone in a field you're curious about, then ask BAYC for an introduction.
+		</p>
+		<div class="actions">
+			<Button href={routes.contact} variant="green">Request an Introduction</Button>
+			<Button href={`#${directoryId}`} variant="outline-green">Browse the Directory</Button>
+		</div>
+	</section>
+
+	<section id={directoryId} class="container directory" aria-label="Member directory">
+		<MemberDirectory />
+		<div class="listing-cta">
+			<p>Are you a member who'd like to be listed?</p>
+			<a href={applyHref} class="text-link add-profile">Add Your Profile</a>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.hero {
+		display: flex;
+		flex-direction: column;
+		gap: 26px;
+		padding-block: 112px 80px;
+	}
+
+	/* With the hero to itself, this title runs larger than other pages' titles. */
+	h1 {
+		font-size: clamp(4rem, 10vw, 9.5rem);
+		line-height: 0.92;
+		letter-spacing: -0.025em;
+	}
+
+	.headline {
+		font-family: var(--font-serif);
+		font-size: clamp(1.625rem, 2.6vw, 2.25rem);
+		line-height: 1.25;
+		color: var(--color-green-800);
+	}
+
+	.lede {
+		max-inline-size: 32em;
+		font-size: var(--text-xl);
+		line-height: var(--leading-body);
+		color: var(--color-text-secondary);
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-block-start: 4px;
+	}
+
+	.directory {
+		padding-block: 40px var(--space-section);
+		border-block-start: 1px solid var(--color-rule);
+	}
+
+	.listing-cta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 20px 48px;
+		margin-block-start: 64px;
+	}
+
+	.listing-cta p {
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		color: var(--color-green-800);
+	}
+
+	.add-profile {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--tap-target);
+		font-size: var(--text-md);
+		font-weight: 600;
+	}
+</style>

@@ -1,0 +1,288 @@
+---
+import type { FeaturedStory } from '../../data/news';
+
+interface Props {
+	stories: readonly FeaturedStory[];
+}
+
+const { stories } = Astro.props;
+const advanceMs = 6500;
+---
+
+<div
+	class="carousel"
+	role="region"
+	aria-roledescription="carousel"
+	aria-label="Featured news"
+	data-carousel
+	data-advance-ms={advanceMs}
+>
+	{
+		stories.map((story, index) => (
+			<div
+				class="slide"
+				role="group"
+				aria-roledescription="slide"
+				aria-label={`${index + 1} of ${stories.length}`}
+				data-slide
+				data-state={index === 0 ? 'current' : 'hidden'}
+				inert={index !== 0}
+			>
+				<img
+					src={story.image.src}
+					alt=""
+					width={story.image.width}
+					height={story.image.height}
+					loading={index === 0 ? 'eager' : 'lazy'}
+					style={`object-position: ${story.image.focus}`}
+				/>
+				<div class="slide-tint" />
+				<div class="slide-content">
+					<p class="slide-meta">
+						<span class="slide-type">{story.type}</span>
+						<span>{story.date}</span>
+					</p>
+					<h3>{story.title}</h3>
+					<a href={story.href} class="slide-link">
+						{story.callToAction}
+					</a>
+				</div>
+			</div>
+		))
+	}
+	<div class="controls" hidden data-carousel-controls>
+		<div class="dots">
+			{
+				stories.map((_, index) => (
+					<button
+						type="button"
+						class="dot"
+						aria-label={`Show story ${index + 1}`}
+						aria-current={index === 0 ? 'true' : 'false'}
+						data-carousel-dot
+					/>
+				))
+			}
+		</div>
+		<div class="arrows">
+			<button type="button" class="arrow" aria-label="Previous story" data-carousel-prev>←</button>
+			<button type="button" class="arrow" aria-label="Next story" data-carousel-next>→</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Advances on a timer, pausing while hovered or focused. Using the controls
+	// stops it for good, and it never auto-advances with reduced motion.
+	// Without JavaScript only the first story shows, with no controls.
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+		const slides = [...root.querySelectorAll<HTMLElement>('[data-slide]')];
+		const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-carousel-dot]')];
+		const controls = root.querySelector<HTMLElement>('[data-carousel-controls]');
+		const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+		const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
+		if (slides.length < 2 || !controls || !prev || !next) continue;
+
+		let current = 0;
+		let stopped = reducedMotion.matches;
+		let paused = false;
+
+		const show = (index: number) => {
+			current = (index + slides.length) % slides.length;
+			slides.forEach((slide, i) => {
+				const isCurrent = i === current;
+				slide.dataset.state = isCurrent ? 'current' : 'hidden';
+				slide.inert = !isCurrent;
+			});
+			dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === current)));
+		};
+
+		const showByUser = (index: number) => {
+			stopped = true;
+			show(index);
+		};
+
+		dots.forEach((dot, index) => dot.addEventListener('click', () => showByUser(index)));
+		prev.addEventListener('click', () => showByUser(current - 1));
+		next.addEventListener('click', () => showByUser(current + 1));
+		root.addEventListener('mouseenter', () => (paused = true));
+		root.addEventListener('mouseleave', () => (paused = false));
+		root.addEventListener('focusin', () => (paused = true));
+		root.addEventListener('focusout', () => (paused = false));
+
+		controls.hidden = false;
+		window.setInterval(() => {
+			if (!stopped && !paused) show(current + 1);
+		}, Number(root.dataset.advanceMs));
+	}
+</script>
+
+<style>
+	.carousel {
+		--focus-ring-color: var(--color-gold-light);
+		position: relative;
+		block-size: clamp(420px, 42vw, 580px);
+		overflow: hidden;
+		border-radius: var(--radius);
+		color: var(--color-cream);
+	}
+
+	.slide {
+		position: absolute;
+		inset: 0;
+		transition:
+			opacity 0.8s ease,
+			transform 1.2s ease;
+	}
+
+	.slide[data-state='hidden'] {
+		opacity: 0;
+		transform: scale(1.04);
+	}
+
+	.slide img {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+	}
+
+	.slide-tint {
+		position: absolute;
+		inset: 0;
+		background: var(--color-green-950);
+		opacity: 0.5;
+	}
+
+	.slide-content {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		gap: 16px;
+		block-size: 100%;
+		padding: 0 48px 96px;
+	}
+
+	.slide-meta {
+		display: flex;
+		gap: 16px;
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-on-dark-subtle);
+	}
+
+	.slide-type {
+		color: var(--color-gold-light);
+	}
+
+	h3 {
+		max-inline-size: 18ch;
+		font-family: var(--font-serif);
+		font-size: clamp(2.125rem, 4vw, 3.5rem);
+		font-weight: 500;
+		line-height: 1.05;
+	}
+
+	.slide-link {
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--tap-target);
+		color: var(--color-cream);
+		font-size: var(--text-md);
+		font-weight: 700;
+		text-decoration-color: var(--color-gold);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+	}
+
+	.slide-link:hover {
+		color: var(--color-on-dark-strong);
+	}
+
+	.controls {
+		position: absolute;
+		inset-inline: 48px;
+		inset-block-end: 28px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	.controls[hidden] {
+		display: none;
+	}
+
+	.dots,
+	.arrows {
+		display: flex;
+		gap: 10px;
+	}
+
+	.dots {
+		gap: 8px;
+	}
+
+	/* Thin bar drawn inside a full-size tap target. */
+	.dot {
+		position: relative;
+		inline-size: 36px;
+		block-size: var(--tap-target);
+		padding: 0;
+		background: none;
+		border: 0;
+		cursor: pointer;
+	}
+
+	.dot::before {
+		content: '';
+		position: absolute;
+		inset-inline: 0;
+		inset-block-start: 50%;
+		block-size: 4px;
+		background: color-mix(in srgb, var(--color-cream) 45%, transparent);
+		transform: translateY(-50%);
+	}
+
+	.dot[aria-current='true']::before {
+		background: var(--color-gold);
+	}
+
+	.arrow {
+		inline-size: 52px;
+		block-size: 52px;
+		background: color-mix(in srgb, var(--color-green-950) 35%, transparent);
+		border: 1px solid color-mix(in srgb, var(--color-cream) 60%, transparent);
+		border-radius: var(--radius);
+		color: var(--color-cream);
+		font-size: 1.375rem;
+		cursor: pointer;
+	}
+
+	.arrow:hover {
+		background: var(--color-gold);
+		border-color: var(--color-gold);
+		color: var(--color-ink-on-gold);
+	}
+
+	@media (max-width: 40rem) {
+		.slide-content {
+			padding-inline: 24px;
+		}
+
+		.controls {
+			inset-inline: 24px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.slide {
+			transition: none;
+		}
+	}
+</style>

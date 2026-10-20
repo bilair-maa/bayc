@@ -1,0 +1,264 @@
+---
+import Button from '../../components/ui/Button.astro';
+import Layout from '../../layouts/Layout.astro';
+import { founder } from '../../data/leadership';
+import { homeSectionHref, routes, site } from '../../data/site';
+---
+
+<Layout pageTitle="A Message From Our Founder">
+	<section class="title-band" aria-labelledby="letter-heading">
+		<div class="container title-inner">
+			<div class="title-text">
+				<p class="tagline">{site.tagline}</p>
+				<h1 id="letter-heading">A Message From Our Founder</h1>
+			</div>
+			<img
+				class="portrait"
+				src={founder.portrait}
+				alt={`Portrait of ${founder.name}`}
+				width="1024"
+				height="1024"
+				fetchpriority="high"
+			/>
+		</div>
+	</section>
+
+	<article class="container letter" aria-labelledby="letter-heading">
+		<aside class="byline">
+			<p class="byline-name">{founder.name}</p>
+			<p>{founder.role}</p>
+			<p>New York · roots in Sandwip</p>
+		</aside>
+		<div class="letter-body">
+			<p class="opening">
+				I was born and raised in New York, but Bangladesh has always been an important part of who I
+				am.
+			</p>
+			<p>
+				My parents made sure I never lost that connection. My mother, who earned her master's degree
+				in Bangla from the University of Dhaka, taught me our language and introduced me to Bengali
+				poetry and literature. My father, a student activist and leader since his days at Chittagong
+				University, introduced me to community involvement and public service. For as long as I can
+				remember, I accompanied him to Bangladeshi community gatherings, meetings, and events
+				throughout New York.
+			</p>
+			<p>
+				Although our family's roots are in Sandwip, I grew up shaped by two worlds. My parents taught
+				me to take pride in where we came from, and growing up in America gave me opportunities to
+				build my own path.
+			</p>
+			<p>
+				Over the years, I've met countless talented and accomplished Bangladeshi Americans, but I've
+				often felt we could do more to bring our community together, encourage civic participation,
+				and develop the next generation of leaders.
+			</p>
+			<p class="pull-quote">That belief led me to establish the Bangladeshi American Youth Council.</p>
+			<p>
+				I wanted to create an organization where young Bangladeshi Americans could celebrate their
+				heritage while taking a more active role in shaping their future. A place to exchange ideas,
+				build relationships, serve our communities, and engage with the institutions that shape our
+				lives.
+			</p>
+			<p>
+				Our language, culture, and history, including the Language Movement and the Liberation War of
+				1971, are important parts of our identity. Preserving that heritage matters, but so does
+				ensuring that our generation has a meaningful voice in the country we call home.
+			</p>
+			<p>
+				I have never believed we need to choose between being proudly American and deeply connected
+				to Bangladesh. In many ways, BAYC is a reflection of that belief and the values my parents
+				instilled in me.
+			</p>
+			<p>
+				My hope is that BAYC grows into something much larger than any one individual, an
+				organization that brings generations together, develops future leaders, and leaves our
+				community stronger than we found it.
+			</p>
+			<footer class="signature">
+				<p class="signature-name">{founder.name}</p>
+				<p class="signature-role">{founder.role}</p>
+				<p class="signature-org">{site.name} (BAYC)</p>
+			</footer>
+		</div>
+	</article>
+
+	<section class="next-step" aria-labelledby="next-step-heading">
+		<div class="container next-step-inner">
+			<h2 id="next-step-heading">Join BAYC</h2>
+			<div class="next-step-actions">
+				<Button href={routes.membership} variant="green">Become a Member</Button>
+				<a href={homeSectionHref('mission')} class="text-link secondary-action">Read Our Mission</a>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	/* The portrait hangs below the green band; the letter's top padding makes room for it. */
+	.title-band {
+		--focus-ring-color: var(--color-gold-light);
+		--portrait-overhang: 96px;
+		background: var(--color-green-800);
+		color: var(--color-cream);
+	}
+
+	.title-inner {
+		display: grid;
+		align-items: end;
+		gap: 48px 88px;
+		padding-block-start: 88px;
+	}
+
+	@media (min-width: 60rem) {
+		.title-inner {
+			grid-template-columns: minmax(0, 1fr) 360px;
+		}
+	}
+
+	.title-text {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		padding-block-end: 72px;
+	}
+
+	.tagline {
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		font-style: italic;
+		color: var(--color-gold-light);
+	}
+
+	h1 {
+		max-inline-size: 15ch;
+		font-family: var(--font-serif);
+		font-size: clamp(2.75rem, 5.6vw, 4.75rem);
+		font-weight: 500;
+		line-height: 1.04;
+		letter-spacing: -0.015em;
+	}
+
+	.portrait {
+		inline-size: 100%;
+		max-inline-size: 360px;
+		aspect-ratio: 4 / 5;
+		margin-block-end: calc(-1 * var(--portrait-overhang));
+		object-fit: cover;
+		object-position: 50% 30%;
+		border: 6px solid var(--color-cream);
+		border-radius: var(--radius);
+	}
+
+	.letter {
+		display: grid;
+		gap: 48px 88px;
+		padding-block: 136px var(--space-section);
+	}
+
+	@media (min-width: 60rem) {
+		.letter {
+			grid-template-columns: 240px minmax(0, 720px);
+		}
+	}
+
+	.byline {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding-block-start: 6px;
+		font-size: var(--text-base);
+		color: var(--color-text-muted);
+	}
+
+	.byline-name {
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		font-weight: 600;
+		color: var(--color-green-800);
+	}
+
+	.letter-body {
+		display: flex;
+		flex-direction: column;
+		gap: 26px;
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		line-height: 1.65;
+	}
+
+	.opening {
+		font-size: 1.75rem;
+		line-height: 1.45;
+		color: var(--color-green-800);
+	}
+
+	.pull-quote {
+		padding-block: 18px;
+		padding-inline-start: 28px;
+		border-inline-start: 3px solid var(--color-gold);
+		font-size: var(--text-3xl);
+		line-height: 1.45;
+		color: var(--color-green-800);
+	}
+
+	.signature {
+		margin-block-start: 20px;
+		padding-block-start: 28px;
+		border-block-start: 1px solid var(--color-rule);
+		font-family: var(--font-sans);
+		font-size: var(--text-md);
+		line-height: 1.5;
+	}
+
+	.signature-name {
+		margin-block-end: 10px;
+		font-family: var(--font-serif);
+		font-size: 2.125rem;
+		font-style: italic;
+		color: var(--color-green-800);
+	}
+
+	.signature-role {
+		font-weight: 600;
+	}
+
+	.signature-org {
+		color: var(--color-text-muted);
+	}
+
+	.next-step {
+		background: var(--color-sand);
+	}
+
+	.next-step-inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 32px 64px;
+		padding-block: 80px;
+	}
+
+	h2 {
+		font-family: var(--font-serif);
+		font-size: clamp(2rem, 3.4vw, 2.75rem);
+		font-weight: 500;
+		line-height: 1.12;
+		color: var(--color-green-800);
+	}
+
+	.next-step-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+	}
+
+	.secondary-action {
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--tap-target-lg);
+		padding-inline: 12px;
+		font-size: var(--text-md);
+		font-weight: 600;
+	}
+</style>

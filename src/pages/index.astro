@@ -1,8 +1,20 @@
 ---
-import Hero from '../components/Hero.astro';
+import CommitmentsSection from '../components/home/CommitmentsSection.astro';
+import FounderMessage from '../components/home/FounderMessage.astro';
+import GetInvolvedSection from '../components/home/GetInvolvedSection.astro';
+import HeritageSection from '../components/home/HeritageSection.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import MissionSection from '../components/home/MissionSection.astro';
+import ProgramsSection from '../components/home/ProgramsSection.astro';
 import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<Hero />
+	<HomeHero />
+	<MissionSection />
+	<CommitmentsSection />
+	<FounderMessage />
+	<ProgramsSection />
+	<HeritageSection />
+	<GetInvolvedSection />
 </Layout>

@@ -1,0 +1,118 @@
+---
+import Button from '../ui/Button.astro';
+import { applyHref, routes, site, siteNav } from '../../data/site';
+
+// Astro may serve a route with or without a trailing slash.
+const currentPath = Astro.url.pathname.replace(/(.)\/$/, '$1');
+
+// A section's sub-pages (e.g. /about/founder) also mark that section as current.
+const isCurrent = (href: string) => currentPath === href || currentPath.startsWith(`${href}/`);
+---
+
+<header class="site-header">
+	<div class="container inner">
+		<a href={routes.home} class="brand">
+			{/* Decorative: the organization name is the link's accessible text. */}
+			<img src="/images/bayc-seal.png" alt="" width="56" height="56" />
+			<span class="brand-text">
+				<span class="brand-name">{site.name}</span>
+				<span class="brand-name-bengali" lang="bn">{site.nameBengali}</span>
+			</span>
+		</a>
+		<nav aria-label="Main">
+			<ul role="list" class="nav-list">
+				{
+					siteNav.map((item) => (
+						<li>
+							<a
+								href={item.href}
+								class="nav-link"
+								aria-current={isCurrent(item.href) ? 'page' : undefined}
+							>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+				<li>
+					<Button href={applyHref} variant="green" size="compact">Join BAYC</Button>
+				</li>
+			</ul>
+		</nav>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		background: var(--color-cream);
+		border-block-end: 1px solid var(--color-border);
+	}
+
+	.inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px 40px;
+		padding-block: 18px;
+	}
+
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		color: var(--color-green-800);
+		text-decoration: none;
+	}
+
+	.brand img {
+		inline-size: 56px;
+		block-size: 56px;
+	}
+
+	.brand-text {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.brand-name {
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		font-weight: 600;
+		line-height: 1.1;
+	}
+
+	.brand-name-bengali {
+		font-family: var(--font-bengali);
+		font-size: var(--text-xs);
+		font-weight: 500;
+		color: var(--color-text-subtle);
+	}
+
+	.nav-list {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px 22px;
+		font-size: var(--text-base);
+		font-weight: 500;
+	}
+
+	.nav-link {
+		color: var(--color-ink);
+		text-decoration: none;
+	}
+
+	.nav-link:hover,
+	.nav-link[aria-current='page'] {
+		color: var(--color-green-800);
+		text-decoration: underline;
+		text-decoration-color: var(--color-gold);
+		text-underline-offset: 6px;
+	}
+
+	.nav-link[aria-current='page'] {
+		text-decoration-thickness: 2px;
+	}
+</style>

@@ -1,0 +1,476 @@
+---
+import MembershipApplicationForm from '../components/membership/MembershipApplicationForm.astro';
+import Button from '../components/ui/Button.astro';
+import RotatingWords from '../components/ui/RotatingWords.astro';
+import Layout from '../layouts/Layout.astro';
+import { audiences } from '../data/home';
+import { membershipApplyId, routes, site } from '../data/site';
+---
+
+<Layout pageTitle="Membership">
+	<section class="container hero" aria-labelledby="membership-heading">
+		<div class="hero-text">
+			<h1 id="membership-heading" class="page-title">Membership</h1>
+			<p class="headline">For <RotatingWords words={audiences} widthEm={12.5} /></p>
+			<p class="lede">
+				We welcome all youth and professionals committed to civic leadership and heritage.
+				Membership is free and voluntary, with no payments required.
+			</p>
+			<div class="actions">
+				<Button href={`#${membershipApplyId}`} variant="gold">Apply Now</Button>
+				<Button href={routes.directory} variant="outline-green">Member Directory</Button>
+			</div>
+		</div>
+
+		<div class="why">
+			<h2 class="eyebrow">Why Join BAYC</h2>
+			<ul role="list" class="why-list">
+				<li class="why-item">
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle>
+						<path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path><path d="M15.5 14.5c2.8 0 5.5 2 5.5 5"></path>
+					</svg>
+					<h3>Get in the Room</h3>
+					<p>Access to exclusive networking events and civic forums for Bangladeshi American youth.</p>
+				</li>
+				<li class="why-item">
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7z"></path>
+					</svg>
+					<h3>Lead &amp; Serve</h3>
+					<p>Opportunities to engage in leadership development and community service initiatives.</p>
+				</li>
+				<li class="why-item">
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M4 5h16v10H9l-5 4z"></path><path d="M8 9h8"></path><path d="M8 12h5"></path>
+					</svg>
+					<h3>Have a Voice</h3>
+					<p>Representation in advisory councils and public policy discussions on civic matters.</p>
+				</li>
+				<li class="why-item">
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<circle cx="6" cy="6" r="2"></circle><circle cx="18" cy="6" r="2"></circle>
+						<circle cx="12" cy="18" r="2"></circle><circle cx="12" cy="10.5" r="1.6"></circle>
+						<path d="M7.6 7.2l3.1 2.3"></path><path d="M16.4 7.2l-3.1 2.3"></path><path d="M12 12.1V16"></path>
+					</svg>
+					<h3>Join the Network</h3>
+					<p>Connection to a prestigious network of civic leaders and professionals in the community.</p>
+				</li>
+			</ul>
+		</div>
+	</section>
+
+	<section class="container steps-section" aria-labelledby="steps-heading">
+		<div class="steps-header">
+			<h2 id="steps-heading" class="section-title">How to Join</h2>
+			<p class="terms">Free · Voluntary · No payments required</p>
+		</div>
+		<ol role="list" class="steps" data-join-steps>
+			<li class="step" data-step>
+				<svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M6 3h8l4 4v14H6z"></path><path d="M14 3v4h4"></path><path d="M9 12h6"></path><path d="M9 16h4"></path>
+				</svg>
+				<span class="track" aria-hidden="true"><span class="fill"></span></span>
+				<span class="step-number" aria-hidden="true">01</span>
+				<h3>Application</h3>
+				<p>
+					Submit your application form online. We welcome all youth and professionals committed to
+					civic leadership and heritage.
+				</p>
+			</li>
+			<li class="step" data-step>
+				<svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true">
+					<circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5"></path><path d="M8.5 11l1.8 1.8L13.5 9.5"></path>
+				</svg>
+				<span class="track" aria-hidden="true"><span class="fill"></span></span>
+				<span class="step-number" aria-hidden="true">02</span>
+				<h3>Review</h3>
+				<p>
+					Our advisory council reviews each application manually to ensure alignment with our values
+					of leadership and civic engagement.
+				</p>
+			</li>
+			<li class="step" data-step>
+				<svg class="step-icon" viewBox="0 0 24 24" aria-hidden="true">
+					<rect x="3" y="6" width="18" height="13" rx="1"></rect><path d="M3 7l9 6.5L21 7"></path>
+				</svg>
+				<span class="track" aria-hidden="true"><span class="fill"></span></span>
+				<span class="step-number" aria-hidden="true">03</span>
+				<h3>Invitation</h3>
+				<p>
+					Successful applicants receive a formal invitation to join our community. Membership is free
+					and voluntary, with no payments required.
+				</p>
+			</li>
+		</ol>
+	</section>
+
+	<section id={membershipApplyId} class="container apply" aria-labelledby="apply-heading">
+		<div class="apply-card">
+			<span class="apply-rule" aria-hidden="true"></span>
+			<h2 id="apply-heading">Apply</h2>
+			<p>
+				Submit your application form online. We welcome all youth and professionals committed to
+				civic leadership and heritage.
+			</p>
+			<p class="apply-terms">Membership is free and voluntary, with no payments required.</p>
+			<p class="apply-questions">
+				Questions? Write to <a href={`mailto:${site.email}`}>{site.email}</a>
+			</p>
+		</div>
+		<MembershipApplicationForm />
+	</section>
+</Layout>
+
+<script>
+	// Highlights each step of "How to Join" in turn. Hovering a step selects it
+	// and holds it for a while. Without JavaScript, or with reduced motion,
+	// every step stays fully visible and nothing cycles.
+	const cycleMs = 2400;
+	const holdAfterHoverMs = 9000;
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	const list = document.querySelector<HTMLElement>('[data-join-steps]');
+	const steps = list ? [...list.querySelectorAll<HTMLElement>('[data-step]')] : [];
+
+	if (list && steps.length > 0 && !reducedMotion.matches) {
+		let current = 0;
+		let holdUntil = 0;
+
+		const show = (index: number) => {
+			current = index;
+			steps.forEach((step, i) => {
+				step.dataset.state = i === index ? 'current' : i < index ? 'done' : 'upcoming';
+			});
+		};
+
+		steps.forEach((step, index) => {
+			step.addEventListener('mouseenter', () => {
+				holdUntil = Date.now() + holdAfterHoverMs;
+				show(index);
+			});
+		});
+
+		list.dataset.animated = '';
+		show(0);
+		window.setInterval(() => {
+			if (Date.now() < holdUntil) return;
+			show((current + 1) % steps.length);
+		}, cycleMs);
+	}
+</script>
+
+<style>
+	.hero {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 64px 88px;
+		padding-block: 104px 96px;
+		color: var(--color-green-800);
+	}
+
+	.hero-text {
+		flex: 1 1 460px;
+		display: flex;
+		flex-direction: column;
+		gap: 26px;
+		min-inline-size: 0;
+	}
+
+	.headline {
+		font-family: var(--font-serif);
+		font-size: clamp(1.625rem, 2.6vw, 2.25rem);
+		line-height: 1.25;
+	}
+
+	.lede {
+		max-inline-size: 32em;
+		font-size: var(--text-lg);
+		line-height: 1.65;
+		color: var(--color-text-secondary);
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-block-start: 6px;
+	}
+
+	.why {
+		flex: 1 1 480px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		min-inline-size: 0;
+	}
+
+	.why-list {
+		border-block-start: 2px solid var(--color-green-800);
+	}
+
+	.why-item {
+		position: relative;
+		display: grid;
+		grid-template-columns: 56px 1fr;
+		align-items: start;
+		gap: 4px 20px;
+		padding: 24px 0 24px 18px;
+		border-block-end: 1px solid var(--color-rule);
+		animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+	}
+
+	.why-item:nth-child(1) {
+		animation-delay: 0.15s;
+	}
+
+	.why-item:nth-child(2) {
+		animation-delay: 0.3s;
+	}
+
+	.why-item:nth-child(3) {
+		animation-delay: 0.45s;
+	}
+
+	.why-item:nth-child(4) {
+		animation-delay: 0.6s;
+	}
+
+	/* Gold bar that grows to full height on hover. */
+	.why-item::before {
+		content: '';
+		position: absolute;
+		inset-block: 24px;
+		inset-inline-start: 0;
+		inline-size: 3px;
+		background: var(--color-gold);
+		transform: scaleY(0.25);
+		transform-origin: top;
+		transition: transform 0.4s ease;
+	}
+
+	.why-item:hover::before {
+		transform: scaleY(1);
+	}
+
+	.why-item svg {
+		grid-row: span 2;
+		inline-size: 44px;
+		block-size: 44px;
+		margin-block-start: 2px;
+		fill: none;
+		stroke: var(--color-gold);
+		stroke-width: 1.3;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.why-item h3 {
+		font-family: var(--font-serif);
+		font-size: clamp(1.75rem, 2.8vw, 2.25rem);
+		font-weight: 500;
+		line-height: 1.1;
+		transition: color 0.3s ease;
+	}
+
+	.why-item:hover h3 {
+		color: var(--color-bronze);
+	}
+
+	.why-item p {
+		font-size: var(--text-md);
+		line-height: 1.55;
+		color: var(--color-text-secondary);
+	}
+
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(18px);
+		}
+	}
+
+	.steps-section {
+		padding-block: 72px 112px;
+		border-block-start: 1px solid var(--color-rule);
+	}
+
+	.steps-header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 16px 48px;
+		margin-block-end: 56px;
+	}
+
+	.section-title {
+		font-family: var(--font-serif);
+		font-size: clamp(2.5rem, 4.4vw, 3.75rem);
+		font-weight: 500;
+		line-height: 1.05;
+		color: var(--color-green-800);
+	}
+
+	.terms {
+		font-size: var(--text-md);
+		font-weight: 600;
+		color: var(--color-bronze);
+	}
+
+	.steps {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+		gap: 32px 40px;
+	}
+
+	.step {
+		--step-accent: var(--color-green-800);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.step-icon {
+		inline-size: 52px;
+		block-size: 52px;
+		margin-block-end: 14px;
+		fill: none;
+		stroke: var(--step-accent);
+		stroke-width: 1.3;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.track {
+		position: relative;
+		block-size: 4px;
+		overflow: hidden;
+		background: var(--color-rule);
+	}
+
+	.fill {
+		position: absolute;
+		inset-block: 0;
+		inset-inline-start: 0;
+		inline-size: 100%;
+		background: var(--color-green-800);
+		transition: inline-size 0.6s ease;
+	}
+
+	.step-number {
+		margin-block-start: 18px;
+		font-family: var(--font-serif);
+		font-size: clamp(4rem, 7vw, 6.5rem);
+		font-weight: 500;
+		line-height: 1;
+		color: var(--step-accent);
+		transition: color 0.4s ease;
+	}
+
+	.step h3 {
+		font-family: var(--font-serif);
+		font-size: 2rem;
+		font-weight: 600;
+		color: var(--color-green-800);
+	}
+
+	.step p {
+		font-size: var(--text-lg);
+		line-height: 1.65;
+		transition: opacity 0.4s ease;
+	}
+
+	/* Only applied once the script runs; 0.72 keeps the dimmed text above 4.5:1 contrast. */
+	[data-animated] .step:not([data-state='current']) p {
+		opacity: 0.72;
+	}
+
+	[data-animated] .step[data-state='current'] {
+		--step-accent: var(--color-gold);
+	}
+
+	[data-animated] .step[data-state='upcoming'] .fill {
+		inline-size: 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.why-item {
+			animation: none;
+		}
+
+		.why-item::before,
+		.why-item h3,
+		.fill,
+		.step-number,
+		.step p {
+			transition: none;
+		}
+	}
+
+	.apply {
+		display: grid;
+		align-items: start;
+		gap: 64px 96px;
+		padding-block: 72px var(--space-section);
+		border-block-start: 1px solid var(--color-rule);
+	}
+
+	@media (min-width: 60rem) {
+		.apply {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+		}
+	}
+
+	.apply-card {
+		--focus-ring-color: var(--color-gold-light);
+		align-self: stretch;
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		padding: clamp(32px, 4vw, 48px);
+		background: var(--color-green-800);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow-raised);
+		color: var(--color-cream);
+	}
+
+	.apply-rule {
+		inline-size: 48px;
+		block-size: 3px;
+		background: var(--color-gold);
+	}
+
+	.apply-card h2 {
+		font-family: var(--font-serif);
+		font-size: clamp(2.75rem, 4.8vw, 4rem);
+		font-weight: 500;
+		line-height: 1.02;
+	}
+
+	.apply-card p {
+		font-size: var(--text-xl);
+		line-height: var(--leading-body);
+		color: var(--color-on-dark-soft);
+	}
+
+	.apply-card .apply-terms {
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		font-style: italic;
+		line-height: 1.4;
+		color: var(--color-gold-light);
+	}
+
+	.apply-card .apply-questions {
+		margin-block-start: auto;
+		font-size: var(--text-md);
+		line-height: 1.6;
+	}
+
+	.apply-questions a {
+		color: var(--color-cream);
+		font-weight: 600;
+	}
+</style>

@@ -1,0 +1,54 @@
+---
+import { commitments } from '../../data/home';
+---
+
+<section class="container commitments">
+	<ul role="list" class="list">
+		{
+			commitments.map((commitment) => (
+				<li class="item">
+					<h3>{commitment.title}</h3>
+					<p>{commitment.description}</p>
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<style>
+	.commitments {
+		padding-block-end: var(--space-section);
+	}
+
+	.list {
+		border-block-start: 2px solid var(--color-green-800);
+	}
+
+	.item {
+		display: grid;
+		align-items: baseline;
+		gap: 16px 64px;
+		padding-block: 44px;
+		border-block-end: 1px solid var(--color-rule);
+	}
+
+	@media (min-width: 60rem) {
+		.item {
+			grid-template-columns: 340px minmax(0, 1fr);
+		}
+	}
+
+	h3 {
+		font-family: var(--font-serif);
+		font-size: clamp(2.5rem, 4.6vw, 4rem);
+		font-weight: 500;
+		line-height: 1;
+		color: var(--color-green-800);
+	}
+
+	p {
+		max-inline-size: 38em;
+		font-size: var(--text-xl);
+		line-height: 1.65;
+	}
+</style>

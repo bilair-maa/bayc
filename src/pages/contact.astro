@@ -1,0 +1,163 @@
+---
+import ContactForm from '../components/contact/ContactForm.astro';
+import Layout from '../layouts/Layout.astro';
+import { routes, site } from '../data/site';
+---
+
+<Layout pageTitle="Contact">
+	<section class="container intro" aria-labelledby="contact-heading">
+		<h1 id="contact-heading" class="page-title">Contact</h1>
+		<p>Questions, partnerships, media, or mentorship introductions.</p>
+	</section>
+
+	<div class="container panels">
+		<section class="reach-us" aria-labelledby="reach-us-heading">
+			<h2 id="reach-us-heading" class="eyebrow">Reach Us</h2>
+			<ul role="list" class="contact-lines">
+				<li>
+					<a href={`mailto:${site.email}`} class="contact-line">
+						<span class="line-text">
+							<span class="line-label">Email</span>
+							<span class="line-value">{site.email}</span>
+						</span>
+						<span class="line-arrow" aria-hidden="true">→</span>
+					</a>
+				</li>
+				<li class="contact-line">
+					<span class="line-text">
+						<span class="line-label">Based In</span>
+						<span class="line-value">{site.location}</span>
+					</span>
+				</li>
+				<li class="contact-line">
+					<span class="line-text">
+						<span class="line-label">Follow</span>
+						<span class="socials">
+							{site.socialPlaceholders.map((network) => <span>{network}</span>)}
+						</span>
+					</span>
+				</li>
+				<li>
+					<a href={routes.membership} class="contact-line">
+						<span class="line-text">
+							<span class="line-label">Want to join?</span>
+							<span class="line-value">Membership</span>
+						</span>
+						<span class="line-arrow" aria-hidden="true">→</span>
+					</a>
+				</li>
+			</ul>
+		</section>
+		<ContactForm />
+	</div>
+</Layout>
+
+<style>
+	.intro {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 24px 80px;
+		padding-block: 112px 64px;
+	}
+
+	.intro p {
+		max-inline-size: 22em;
+		font-family: var(--font-serif);
+		font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+		font-style: italic;
+		line-height: 1.4;
+		color: var(--color-bronze);
+	}
+
+	.panels {
+		display: grid;
+		align-items: stretch;
+		gap: 24px;
+		padding-block-end: 128px;
+	}
+
+	@media (min-width: 60rem) {
+		.panels {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+		}
+	}
+
+	.reach-us {
+		--focus-ring-color: var(--color-gold-light);
+		--eyebrow-color: var(--color-gold-light);
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: clamp(28px, 4vw, 44px);
+		background: var(--color-green-800);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow-raised);
+		color: var(--color-cream);
+	}
+
+	.reach-us .eyebrow {
+		margin-block-end: 12px;
+	}
+
+	.contact-line {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding-block: 22px;
+		border-block-end: 1px solid color-mix(in srgb, var(--color-gold-light) 35%, transparent);
+		color: var(--color-cream);
+		text-decoration: none;
+	}
+
+	.contact-lines li:last-child .contact-line {
+		border-block-end: 0;
+	}
+
+	a.contact-line:hover {
+		color: var(--color-on-dark-strong);
+	}
+
+	.line-text {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.line-label {
+		font-size: var(--text-xs);
+		color: var(--color-on-dark-subtle);
+	}
+
+	.line-value {
+		font-family: var(--font-serif);
+		font-size: 1.75rem;
+		overflow-wrap: anywhere;
+	}
+
+	.socials {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 20px;
+		margin-block-start: 4px;
+		font-size: var(--text-md);
+	}
+
+	.line-arrow {
+		font-size: 1.375rem;
+		color: var(--color-gold);
+		transition: transform 0.2s ease;
+	}
+
+	a.contact-line:hover .line-arrow {
+		transform: translateX(6px);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.line-arrow {
+			transition: none;
+		}
+	}
+</style>

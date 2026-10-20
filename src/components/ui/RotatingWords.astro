@@ -1,0 +1,96 @@
+---
+// A headline word that cycles through `words`. Screen readers get the whole
+// list once instead of a changing word. Without JavaScript, or with reduced
+// motion, the first word stays put. Cycling pauses while hovered.
+interface Props {
+	words: readonly string[];
+	// Wide enough for the longest word, in em, so the line doesn't reflow.
+	widthEm: number;
+}
+
+const { words, widthEm } = Astro.props;
+const intervalMs = 2400;
+---
+
+<span class="rotating" style={`--rotating-width: ${widthEm}em`} data-rotating-words data-interval={intervalMs}>
+	<span class="visually-hidden">{words.join(', ')}</span>
+	<span class="track" aria-hidden="true">
+		{
+			words.map((word, index) => (
+				<span class="word" data-state={index === 0 ? 'current' : 'next'}>
+					{word}
+				</span>
+			))
+		}
+	</span>
+</span>
+
+<script>
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	for (const root of document.querySelectorAll<HTMLElement>('[data-rotating-words]')) {
+		const words = [...root.querySelectorAll<HTMLElement>('.word')];
+		const intervalMs = Number(root.dataset.interval);
+		if (words.length < 2 || reducedMotion.matches) continue;
+
+		let current = 0;
+		let paused = false;
+		root.addEventListener('mouseenter', () => (paused = true));
+		root.addEventListener('mouseleave', () => (paused = false));
+
+		window.setInterval(() => {
+			if (paused) return;
+			const previous = current;
+			current = (current + 1) % words.length;
+			words.forEach((word, index) => {
+				word.dataset.state =
+					index === current ? 'current' : index === previous ? 'previous' : 'next';
+			});
+		}, intervalMs);
+	}
+</script>
+
+<style>
+	.rotating {
+		position: relative;
+		display: inline-block;
+		vertical-align: bottom;
+		inline-size: var(--rotating-width);
+		max-inline-size: 100%;
+		block-size: 1.3em;
+	}
+
+	.word {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		border-block-end: 2px solid var(--color-gold);
+		color: var(--color-gold);
+		font-style: italic;
+		white-space: nowrap;
+		transition:
+			opacity 0.5s ease,
+			transform 0.6s ease;
+	}
+
+	.word[data-state='current'] {
+		opacity: 1;
+		transform: none;
+	}
+
+	.word[data-state='previous'] {
+		opacity: 0;
+		transform: translateY(-0.6em);
+	}
+
+	.word[data-state='next'] {
+		opacity: 0;
+		transform: translateY(0.6em);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.word {
+			transition: none;
+		}
+	}
+</style>

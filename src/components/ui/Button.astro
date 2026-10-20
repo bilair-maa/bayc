@@ -1,0 +1,99 @@
+---
+// Renders a link when given `href` (navigation) and a <button> otherwise
+// (form actions), so both share one look.
+type Props = {
+	// 'outline' sits on dark backgrounds; 'outline-green' on light ones.
+	variant: 'gold' | 'green' | 'outline' | 'outline-green';
+	size?: 'compact' | 'large';
+} & ({ href: string } | { type: 'submit' | 'button'; disabled?: boolean });
+
+const { variant, size = 'large' } = Astro.props;
+const classes = ['button', variant, size];
+---
+
+{
+	'href' in Astro.props ? (
+		<a href={Astro.props.href} class:list={classes}>
+			<slot />
+		</a>
+	) : (
+		<button type={Astro.props.type} disabled={Astro.props.disabled} class:list={classes}>
+			<slot />
+		</button>
+	)
+}
+
+<style>
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border: 0;
+		border-radius: var(--radius);
+		font-weight: 700;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.button:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+
+	.large {
+		min-block-size: var(--tap-target-lg);
+		padding: 15px 28px;
+		font-size: var(--text-md);
+	}
+
+	.compact {
+		min-block-size: var(--tap-target);
+		padding: 12px 20px;
+		font-weight: 600;
+	}
+
+	.gold {
+		background: var(--color-gold);
+		color: var(--color-ink-on-gold);
+	}
+
+	.gold:hover:not(:disabled) {
+		background: var(--color-gold-hover);
+		color: var(--color-ink-on-gold);
+	}
+
+	.green {
+		background: var(--color-green-800);
+		color: var(--color-cream);
+	}
+
+	.green:hover:not(:disabled) {
+		background: var(--color-green-950);
+		color: var(--color-cream);
+	}
+
+	.outline {
+		border: 1px solid color-mix(in srgb, var(--color-cream) 55%, transparent);
+		background: transparent;
+		color: var(--color-cream);
+		font-weight: 600;
+	}
+
+	.outline:hover:not(:disabled) {
+		background: color-mix(in srgb, var(--color-cream) 8%, transparent);
+		color: var(--color-cream);
+	}
+
+	.outline-green {
+		padding-inline: 22px;
+		border: 1px solid var(--color-green-800);
+		background: transparent;
+		color: var(--color-green-800);
+		font-weight: 600;
+	}
+
+	.outline-green:hover:not(:disabled) {
+		background: color-mix(in srgb, var(--color-green-800) 6%, transparent);
+		color: var(--color-green-950);
+	}
+</style>

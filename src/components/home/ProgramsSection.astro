@@ -1,0 +1,66 @@
+---
+import { programs } from '../../data/home';
+import { homeSections } from '../../data/site';
+---
+
+<section id={homeSections.work} class="container programs" aria-labelledby="work-heading">
+	<div class="intro">
+		<h2 id="work-heading">What We Do</h2>
+		<p>
+			Through these programs, we aim to prepare the next generation to participate meaningfully in
+			public life.
+		</p>
+	</div>
+	<ul role="list" class="list">
+		{programs.map((program) => <li>{program}</li>)}
+	</ul>
+</section>
+
+<style>
+	.programs {
+		display: grid;
+		gap: 48px 80px;
+		padding-block: var(--space-section);
+	}
+
+	@media (min-width: 60rem) {
+		.programs {
+			grid-template-columns: 320px minmax(0, 1fr);
+		}
+	}
+
+	.intro {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	h2 {
+		font-family: var(--font-serif);
+		font-size: clamp(2.25rem, 3.8vw, 3.25rem);
+		font-weight: 500;
+		line-height: 1.08;
+		color: var(--color-green-800);
+	}
+
+	.intro p {
+		font-size: var(--text-lg);
+		line-height: var(--leading-body);
+		color: var(--color-text-secondary);
+	}
+
+	.list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+		column-gap: 56px;
+	}
+
+	li {
+		padding-block: 26px 40px;
+		border-block-start: 1px solid var(--color-rule);
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		font-weight: 600;
+		color: var(--color-green-800);
+	}
+</style>

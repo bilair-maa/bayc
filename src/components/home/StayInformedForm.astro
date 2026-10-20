@@ -1,0 +1,52 @@
+---
+import Button from '../ui/Button.astro';
+
+// Not yet connected to a backend. The submit button stays disabled (which also
+// blocks Enter-to-submit) until the form is wired to Wix, so visitors are never
+// shown a button that silently does nothing.
+---
+
+<form class="signup" aria-labelledby="signup-heading" aria-describedby="signup-status">
+	<h3 id="signup-heading">Stay Informed</h3>
+	<p class="intro">Event announcements and news from BAYC.</p>
+	<label class="field">
+		Name
+		<input class="input" type="text" name="name" autocomplete="name" placeholder="Your full name" required />
+	</label>
+	<label class="field">
+		Email
+		<input class="input" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+	</label>
+	<Button type="submit" variant="gold" disabled>Subscribe</Button>
+	<p id="signup-status" class="status">Sign-ups open soon.</p>
+</form>
+
+<style>
+	.signup {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		padding: 36px;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+	}
+
+	h3 {
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		font-weight: 600;
+		color: var(--color-green-800);
+	}
+
+	.intro {
+		font-size: var(--text-base);
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+
+	.status {
+		font-size: var(--text-sm);
+		color: var(--color-text-secondary);
+	}
+</style>

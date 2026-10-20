@@ -1,0 +1,62 @@
+---
+import { homeSections } from '../../data/site';
+---
+
+<section id={homeSections.mission} class="container mission" aria-labelledby="mission-heading">
+	<h2 id="mission-heading" class="section-label">Our Mission</h2>
+	<div class="body">
+		<p class="statement">
+			To develop leaders, preserve our heritage, strengthen our community, and empower the next
+			generation of Bangladeshi Americans to make a meaningful difference.
+		</p>
+		<div class="details">
+			<p>
+				Founded in New York with a national vision, BAYC empowers young Bangladeshi Americans to
+				become leaders in their communities, active participants in American civic life, and proud
+				stewards of Bangladesh's history, culture and heritage.
+			</p>
+			<p>
+				We work with government, public institutions and civic organizations to strengthen the
+				representation of Bangladeshi Americans, and we promote constructive dialogue and
+				people-to-people ties between the United States and Bangladesh.
+			</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	.mission {
+		display: grid;
+		gap: 48px 80px;
+		padding-block: var(--space-section) 96px;
+	}
+
+	@media (min-width: 60rem) {
+		.mission {
+			grid-template-columns: 260px minmax(0, 1fr);
+		}
+	}
+
+	.section-label {
+		padding-block-start: 14px;
+	}
+
+	.statement {
+		font-family: var(--font-serif);
+		font-size: clamp(1.875rem, 3.6vw, 3rem);
+		line-height: 1.18;
+		letter-spacing: -0.01em;
+		color: var(--color-green-800);
+	}
+
+	.details {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+		gap: 32px 56px;
+		margin-block-start: 56px;
+		padding-block-start: 40px;
+		border-block-start: 1px solid var(--color-rule);
+		font-size: var(--text-lg);
+		line-height: var(--leading-body);
+	}
+</style>

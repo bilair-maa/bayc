@@ -1,0 +1,188 @@
+---
+import Button from '../ui/Button.astro';
+
+// Not yet connected to a backend. The submit button stays disabled (which also
+// blocks Enter-to-submit) until the form is wired to Wix, so visitors are never
+// shown a button that silently does nothing.
+const roles = [
+	{ value: 'student', label: 'Student' },
+	{ value: 'young-professional', label: 'Young Professional' },
+	{ value: 'community-member', label: 'Community Member' },
+] as const;
+
+const interests = [
+	{ value: 'leadership-development', label: 'Leadership Development' },
+	{ value: 'mentorship', label: 'Mentorship' },
+	{ value: 'civic-education', label: 'Civic Education' },
+	{ value: 'community-service', label: 'Community Service' },
+	{ value: 'heritage-culture', label: 'Heritage & Culture' },
+] as const;
+---
+
+<form
+	class="application-form"
+	aria-labelledby="application-heading"
+	aria-describedby="application-status"
+>
+	<h3 id="application-heading">Membership Application</h3>
+
+	<div class="field-row">
+		<label class="field">
+			First Name
+			<input class="input" type="text" name="firstName" autocomplete="given-name" required />
+		</label>
+		<label class="field">
+			Last Name
+			<input class="input" type="text" name="lastName" autocomplete="family-name" required />
+		</label>
+	</div>
+
+	<div class="field-row">
+		<label class="field">
+			Email
+			<input
+				class="input"
+				type="email"
+				name="email"
+				autocomplete="email"
+				placeholder="you@example.com"
+				required
+			/>
+		</label>
+		<label class="field">
+			City or Borough
+			<input
+				class="input"
+				type="text"
+				name="city"
+				autocomplete="address-level2"
+				placeholder="e.g. Queens, NY"
+			/>
+		</label>
+	</div>
+
+	<fieldset>
+		<legend>I am a</legend>
+		<div class="choices">
+			{
+				roles.map((role) => (
+					<label class="choice">
+						<input type="radio" name="role" value={role.value} required />
+						{role.label}
+					</label>
+				))
+			}
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>Interested In</legend>
+		<div class="choices choices-grid">
+			{
+				interests.map((interest) => (
+					<label class="choice">
+						<input type="checkbox" name="interests" value={interest.value} />
+						{interest.label}
+					</label>
+				))
+			}
+			{/* A consent choice, not an interest, so it submits under its own name. */}
+			<label class="choice">
+				<input type="checkbox" name="listInDirectory" value="yes" />
+				List Me in the Directory
+			</label>
+		</div>
+	</fieldset>
+
+	<label class="field">
+		Why do you want to join? (optional)
+		<textarea class="input message" name="message" rows="4"></textarea>
+	</label>
+
+	<div class="submit-row">
+		<Button type="submit" variant="green" disabled>Submit Application</Button>
+		<p id="application-status" class="status">Applications open soon.</p>
+	</div>
+</form>
+
+<style>
+	.application-form {
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+		padding: clamp(24px, 4vw, 48px);
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-block-start: 4px solid var(--color-gold);
+		border-radius: var(--radius);
+	}
+
+	h3 {
+		font-family: var(--font-serif);
+		font-size: 1.875rem;
+		font-weight: 600;
+		color: var(--color-green-800);
+	}
+
+	.field-row {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+		gap: 18px;
+	}
+
+	fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	legend {
+		margin-block-end: 10px;
+		padding: 0;
+		font-size: var(--text-sm);
+		font-weight: 600;
+	}
+
+	.choices {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 28px;
+		font-size: var(--text-md);
+	}
+
+	.choices-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+		gap: 4px 24px;
+	}
+
+	.choice {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-block-size: var(--tap-target);
+	}
+
+	.choice input {
+		inline-size: 20px;
+		block-size: 20px;
+		margin: 0;
+		accent-color: var(--color-green-800);
+	}
+
+	.message {
+		resize: vertical;
+	}
+
+	.submit-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+	}
+
+	.status {
+		font-size: var(--text-sm);
+		color: var(--color-text-secondary);
+	}
+</style>

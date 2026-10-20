@@ -1,0 +1,106 @@
+---
+import { principles } from '../../data/home';
+import { homeSections } from '../../data/site';
+---
+
+<section id={homeSections.heritage} class="heritage" aria-labelledby="principles-heading">
+	<div class="container inner">
+		<div class="intro">
+			<p class="year">1971</p>
+			<p class="intro-text">
+				We recognize the historic significance of Bangladesh's 1971 Liberation War and its enduring
+				ideals of freedom, self-determination, and human dignity.
+			</p>
+		</div>
+		<div class="principles">
+			<h2 id="principles-heading" class="section-label">Our Principles</h2>
+			<ol role="list" class="principle-list">
+				{principles.map((principle) => <li>{principle}</li>)}
+			</ol>
+		</div>
+	</div>
+</section>
+
+<style>
+	.heritage {
+		--focus-ring-color: var(--color-gold-light);
+		--section-label-color: var(--color-gold-light);
+		background: var(--color-green-800);
+		color: var(--color-cream);
+	}
+
+	.inner {
+		display: flex;
+		flex-direction: column;
+		gap: 64px;
+		padding-block: var(--space-section);
+	}
+
+	.intro {
+		display: grid;
+		align-items: end;
+		gap: 40px 80px;
+	}
+
+	@media (min-width: 60rem) {
+		.intro {
+			grid-template-columns: minmax(0, 1fr) 380px;
+		}
+	}
+
+	.year {
+		font-family: var(--font-serif);
+		font-size: clamp(6rem, 16vw, 13.75rem);
+		font-weight: 500;
+		line-height: 0.85;
+		letter-spacing: -0.03em;
+		color: var(--color-gold);
+	}
+
+	.intro-text {
+		font-size: var(--text-xl);
+		line-height: var(--leading-body);
+		color: var(--color-on-dark-soft);
+	}
+
+	.principles {
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+		padding-block-start: 48px;
+		border-block-start: 1px solid color-mix(in srgb, var(--color-gold-light) 45%, transparent);
+	}
+
+	/* Numerals come from a counter so they always match the list order. */
+	.principle-list {
+		counter-reset: principle;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		gap: 28px 32px;
+	}
+
+	li {
+		counter-increment: principle;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding-block-start: 16px;
+		border-block-start: 1px solid var(--color-gold);
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		line-height: 1.25;
+	}
+
+	/*
+	 * The second `content` gives the numeral empty alt text so screen readers
+	 * don't repeat what the <ol> already announces. Browsers without that
+	 * syntax keep the first declaration.
+	 */
+	li::before {
+		content: counter(principle, upper-roman);
+		content: counter(principle, upper-roman) / '';
+		font-size: var(--text-base);
+		font-style: italic;
+		color: var(--color-gold-light);
+	}
+</style>

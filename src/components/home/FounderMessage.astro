@@ -1,0 +1,118 @@
+---
+import { founder } from '../../data/leadership';
+import { routes } from '../../data/site';
+---
+
+<section class="founder" aria-labelledby="founder-heading">
+	<div class="container inner">
+		<figure class="portrait">
+			<img
+				src={founder.portrait}
+				alt={`Portrait of ${founder.name}`}
+				width="1024"
+				height="1024"
+				loading="lazy"
+			/>
+			<figcaption>
+				<span class="name">{founder.name}</span>
+				<span class="role">{founder.role}</span>
+			</figcaption>
+		</figure>
+		<div class="message">
+			<h2 id="founder-heading" class="section-label">A Message From Our Founder</h2>
+			<blockquote>
+				“I have never believed we need to choose between being proudly American and deeply
+				connected to Bangladesh.”
+			</blockquote>
+			<p>
+				Born and raised in New York, with family roots in Sandwip, Anindya grew up attending
+				community gatherings with his father, a student leader since his days at Chittagong
+				University, and learning Bangla and Bengali literature from his mother. BAYC grew from his
+				belief that our community could do more to come together, participate in civic life and
+				develop its next generation of leaders.
+			</p>
+			<a href={routes.founderLetter} class="text-link read-more">Read the Full Letter</a>
+		</div>
+	</div>
+</section>
+
+<style>
+	.founder {
+		background: var(--color-sand);
+	}
+
+	.inner {
+		display: grid;
+		align-items: start;
+		gap: 56px 88px;
+		padding-block: 112px;
+	}
+
+	@media (min-width: 60rem) {
+		.inner {
+			grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+		}
+	}
+
+	.portrait {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		max-inline-size: 380px;
+	}
+
+	.portrait img {
+		inline-size: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		object-position: 50% 30%;
+		border-radius: var(--radius);
+	}
+
+	figcaption {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.name {
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		font-weight: 600;
+		color: var(--color-green-800);
+	}
+
+	.role {
+		font-size: var(--text-base);
+		color: var(--color-text-muted);
+	}
+
+	.message {
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+
+	blockquote {
+		font-family: var(--font-serif);
+		font-size: clamp(1.875rem, 3.4vw, 2.875rem);
+		line-height: 1.2;
+		letter-spacing: -0.01em;
+		color: var(--color-green-800);
+	}
+
+	p {
+		max-inline-size: 36em;
+		font-size: var(--text-xl);
+		line-height: var(--leading-body);
+	}
+
+	.read-more {
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		min-block-size: var(--tap-target);
+		font-size: var(--text-lg);
+		font-weight: 600;
+	}
+</style>

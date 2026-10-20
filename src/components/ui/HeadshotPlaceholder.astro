@@ -1,0 +1,28 @@
+---
+import PersonIcon from './PersonIcon.astro';
+
+// Stand-in for a person's photo until a real headshot is provided. The parent
+// sets the box size; set --headshot-bg on a section to change the fill.
+interface Props {
+	iconSize: number;
+}
+
+const { iconSize } = Astro.props;
+---
+
+<div class="headshot" role="img" aria-label="Headshot placeholder">
+	<PersonIcon size={iconSize} />
+</div>
+
+<style>
+	.headshot {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		inline-size: 100%;
+		block-size: 100%;
+		background: var(--headshot-bg, var(--color-placeholder-surface));
+		border-radius: var(--radius);
+		color: var(--color-input-border);
+	}
+</style>

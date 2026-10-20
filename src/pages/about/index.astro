@@ -1,0 +1,819 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { founder } from '../../data/leadership';
+import { routes } from '../../data/site';
+
+const priorities = [
+	{
+		id: 'civic-leadership',
+		title: 'Civic Leadership',
+		description:
+			'Developing future civic leaders through mentorship, professional development, and engagement with public institutions.',
+	},
+	{
+		id: 'heritage-advocacy',
+		title: 'Heritage Advocacy',
+		description:
+			'Preserving and celebrating Bengali language, literature, music, arts, and history through community storytelling and public education.',
+	},
+	{
+		id: 'policy-engagement',
+		title: 'Policy Engagement',
+		description:
+			'Strengthening the civic voice of Bangladeshi Americans through engagement with public officials and civic organizations.',
+	},
+] as const;
+
+const impactStatement =
+	'Our civic priorities are designed to empower the next generation of leaders, ensuring that the rich heritage of the Bangladeshi American community is preserved and celebrated through active civic engagement and sustainable advocacy.';
+const emphasizedWords = new Set(['empower', 'next', 'generation', 'preserved', 'celebrated']);
+const impactWords = impactStatement.split(' ').map((text) => ({
+	text,
+	emphasized: emphasizedWords.has(text.replace(/[^a-z]/gi, '').toLowerCase()),
+}));
+
+const milestones = [
+	{
+		marker: '1952',
+		title: 'The Language Movement',
+		description: 'The defense of Bangla as a mother tongue, remembered each year on 21 February.',
+	},
+	{
+		marker: '1971',
+		title: 'The Liberation War',
+		description:
+			'Ideals of freedom, self-determination, and human dignity that BAYC carries forward.',
+	},
+	{
+		marker: 'Today',
+		title: 'BAYC',
+		description:
+			'A new generation of Bangladeshi Americans with a voice in the country we call home.',
+	},
+] as const;
+---
+
+<Layout pageTitle="About">
+	<section class="opener" aria-labelledby="about-heading">
+		<div class="opener-media" aria-hidden="true">
+			<img
+				class="opener-bangladesh"
+				src="/images/hero-bangladesh-river-boats.jpg"
+				alt=""
+				width="4032"
+				height="2701"
+				fetchpriority="high"
+			/>
+			<img
+				class="opener-new-york"
+				src="/images/hero-new-york-skyline.jpg"
+				alt=""
+				width="2576"
+				height="1640"
+				fetchpriority="high"
+			/>
+			<div class="opener-tint"></div>
+		</div>
+		<div class="container opener-content">
+			<h1 id="about-heading">About<br />BAYC</h1>
+			<p>Founded in New York with a national vision.</p>
+		</div>
+	</section>
+
+	<section class="container story" aria-label="Mission, vision and legacy">
+		<div class="mission">
+			<div class="mission-photo">
+				<div class="photo-frame" aria-hidden="true"></div>
+				<img
+					src="/images/hero-bangladesh-rice-fields.jpg"
+					alt="Rice paddies and river boats in Bangladesh"
+					width="2576"
+					height="1932"
+					loading="lazy"
+				/>
+			</div>
+			<div class="mission-text">
+				<p class="eyebrow">Our Mission</p>
+				<h2>BAYC is dedicated to empowering the next generation of Bangladeshi American leaders.</h2>
+				<p class="mission-body">
+					We bridge heritage and civic engagement, fostering a community that values leadership,
+					cultural pride, and active participation in public life.
+				</p>
+			</div>
+		</div>
+
+		<div class="vision">
+			<p class="eyebrow">Our Vision</p>
+			<p class="vision-statement">
+				Our vision is a vibrant, inclusive civic space where youth and professionals unite to shape a
+				more equitable future for our community.
+			</p>
+		</div>
+
+		<div class="legacy">
+			<div class="legacy-words" aria-hidden="true">
+				<span>Independent</span>
+				<span class="legacy-accent">Volunteer-Led</span>
+				<span>Heritage &amp; Service</span>
+			</div>
+			<div class="legacy-text">
+				<p class="legacy-kicker">Our Foundation</p>
+				<h2>Independent Legacy</h2>
+				<p>
+					BAYC is an independent, volunteer-led civic association dedicated to fostering leadership
+					and civic engagement among Bangladeshi American youth. Founded on the principles of
+					heritage and service, we remain a volunteer-driven collective committed to our community's
+					growth and public impact.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="priorities-section" aria-labelledby="priorities-heading">
+		<div class="container priorities-inner">
+			<h2 id="priorities-heading" class="section-title">Our Priorities</h2>
+			<ul role="list" class="priorities" data-priorities>
+				{
+					priorities.map((priority, index) => (
+						<li class="panel" data-panel>
+							<span class="panel-number" aria-hidden="true">
+								{String(index + 1).padStart(2, '0')}
+							</span>
+							<div class="panel-body">
+								<h3>
+									<button
+										type="button"
+										class="panel-toggle"
+										aria-expanded="true"
+										aria-controls={`${priority.id}-text`}
+									>
+										{priority.title}
+									</button>
+								</h3>
+								<p id={`${priority.id}-text`} class="panel-description">
+									{priority.description}
+								</p>
+							</div>
+						</li>
+					))
+				}
+			</ul>
+
+			<div class="impact">
+				<h3 class="eyebrow">Community Impact</h3>
+				<p class="impact-statement" data-reveal>
+					<span class="visually-hidden">{impactStatement}</span>
+					<span aria-hidden="true">
+						{
+							impactWords.map((word, index) => (
+								<Fragment>
+									<span
+										class:list={['impact-word', { emphasized: word.emphasized }]}
+										style={`--word-index: ${index}`}
+									>
+										{word.text}
+									</span>{' '}
+								</Fragment>
+							))
+						}
+					</span>
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="container history" aria-labelledby="history-heading">
+		<h2 id="history-heading" class="section-title">The History We Carry</h2>
+		<ol role="list" class="timeline">
+			{
+				milestones.map((milestone) => (
+					<li class="milestone">
+						<span class:list={['milestone-marker', { current: milestone.marker === 'Today' }]}>
+							{milestone.marker}
+						</span>
+						<span class="milestone-title">{milestone.title}</span>
+						<span class="milestone-description">{milestone.description}</span>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<nav class="next-links" aria-label="More about BAYC">
+		<div class="container next-links-inner">
+			<a href={routes.founderLetter} class="next-link founder-link">
+				<img src={founder.portrait} alt="" width="1024" height="1024" loading="lazy" />
+				<span class="next-link-text">
+					<span class="next-link-kicker">{founder.name}, {founder.role}</span>
+					<span class="next-link-title">
+						Read the Founder's Letter <span aria-hidden="true">→</span>
+					</span>
+				</span>
+			</a>
+			<a href={routes.leadership} class="next-link leadership-link">
+				<span class="next-link-kicker">Leadership Council &amp; Advisory Council</span>
+				<span class="next-link-title">Meet Our Leadership <span aria-hidden="true">→</span></span>
+			</a>
+		</div>
+	</nav>
+</Layout>
+
+<script>
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	// Priorities: one panel is expanded at a time; hovering, focusing or
+	// clicking a panel expands it. Without JavaScript every panel stays open.
+	for (const list of document.querySelectorAll<HTMLElement>('[data-priorities]')) {
+		const panels = [...list.querySelectorAll<HTMLElement>('[data-panel]')];
+		const toggles = panels.map((panel) => panel.querySelector<HTMLButtonElement>('button'));
+
+		const expand = (index: number) => {
+			panels.forEach((panel, i) => {
+				const expanded = i === index;
+				panel.dataset.state = expanded ? 'expanded' : 'collapsed';
+				toggles[i]?.setAttribute('aria-expanded', String(expanded));
+			});
+		};
+
+		panels.forEach((panel, index) => {
+			panel.addEventListener('mouseenter', () => expand(index));
+			toggles[index]?.addEventListener('focus', () => expand(index));
+			toggles[index]?.addEventListener('click', () => expand(index));
+		});
+
+		list.dataset.interactive = '';
+		expand(0);
+	}
+
+	// Community Impact: the words fade in one by one when the statement scrolls
+	// into view. Skipped with reduced motion, and visible from the start if the
+	// script never runs.
+	if (!reducedMotion.matches && 'IntersectionObserver' in window) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					(entry.target as HTMLElement).dataset.reveal = 'shown';
+					observer.unobserve(entry.target);
+				}
+			},
+			{ threshold: 0.4 },
+		);
+		for (const element of document.querySelectorAll<HTMLElement>('[data-reveal]')) {
+			element.dataset.reveal = 'waiting';
+			observer.observe(element);
+		}
+	}
+</script>
+
+<style>
+	/* The two photos sit side by side and fade into the page at the bottom. */
+	.opener {
+		--focus-ring-color: var(--color-gold-light);
+		position: relative;
+		color: var(--color-cream);
+	}
+
+	.opener-media {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		mask-image: linear-gradient(
+			to bottom,
+			black 55%,
+			rgb(0 0 0 / 60%) 75%,
+			transparent 100%
+		);
+	}
+
+	.opener-media img {
+		flex: 1 1 50%;
+		min-inline-size: 0;
+		block-size: 100%;
+		object-fit: cover;
+	}
+
+	.opener-bangladesh {
+		object-position: 35% 50%;
+	}
+
+	.opener-new-york {
+		object-position: 50% 55%;
+	}
+
+	.opener-tint {
+		position: absolute;
+		inset: 0;
+		background: var(--color-green-950);
+		opacity: 0.5;
+	}
+
+	.opener-content {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		min-block-size: 760px;
+		padding-block: 200px 300px;
+	}
+
+	.opener h1 {
+		font-family: var(--font-serif);
+		font-size: clamp(4.75rem, 11vw, 10.5rem);
+		font-weight: 500;
+		line-height: 0.92;
+		letter-spacing: -0.025em;
+	}
+
+	.opener p {
+		font-family: var(--font-serif);
+		font-size: clamp(1.5rem, 2.4vw, 2rem);
+		font-style: italic;
+		line-height: 1.35;
+		color: var(--color-gold-light);
+	}
+
+	.story {
+		padding-block: 24px 152px;
+	}
+
+	.mission {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		gap: 64px 88px;
+	}
+
+	.mission-photo {
+		position: relative;
+		flex: 1 1 440px;
+		min-inline-size: 0;
+		max-inline-size: 560px;
+	}
+
+	/* Offset gold outline behind the photo. */
+	.photo-frame {
+		position: absolute;
+		inset: 28px -28px -28px 28px;
+		border: 2px solid var(--color-gold);
+		pointer-events: none;
+	}
+
+	.mission-photo img {
+		position: relative;
+		inline-size: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		object-position: 62% 50%;
+		border-radius: var(--radius);
+	}
+
+	.mission-text {
+		flex: 1 1 420px;
+		display: flex;
+		flex-direction: column;
+		gap: 26px;
+		min-inline-size: 0;
+		padding-block-start: 40px;
+	}
+
+	.mission-text h2 {
+		font-family: var(--font-serif);
+		font-size: clamp(2.125rem, 3.6vw, 3.25rem);
+		font-weight: 500;
+		line-height: 1.12;
+		letter-spacing: -0.01em;
+		color: var(--color-green-800);
+	}
+
+	.mission-body {
+		font-size: var(--text-xl);
+		line-height: 1.75;
+		color: var(--color-text-secondary);
+	}
+
+	/* On wide screens the card overlaps the bottom of the mission photo. */
+	.vision {
+		--eyebrow-color: var(--color-gold-light);
+		position: relative;
+		margin-block-start: 48px;
+		padding: clamp(36px, 5vw, 64px);
+		background: var(--color-green-800);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow-raised);
+		color: var(--color-cream);
+	}
+
+	@media (min-width: 56.25rem) {
+		.vision {
+			margin-block-start: -150px;
+			margin-inline-start: 40%;
+		}
+	}
+
+	.vision .eyebrow {
+		margin-block-end: 22px;
+	}
+
+	.vision-statement {
+		font-family: var(--font-serif);
+		font-size: clamp(1.75rem, 3vw, 2.625rem);
+		font-style: italic;
+		line-height: 1.25;
+	}
+
+	.legacy {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: stretch;
+		gap: 48px 72px;
+		margin-block-start: 144px;
+	}
+
+	.legacy-words {
+		flex: 1 1 340px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		justify-content: center;
+		gap: 14px;
+		min-inline-size: 0;
+		font-family: var(--font-serif);
+		font-size: clamp(3rem, 5.4vw, 4.75rem);
+		font-weight: 500;
+		line-height: 1;
+		letter-spacing: -0.02em;
+		text-align: end;
+		color: var(--color-green-800);
+	}
+
+	.legacy-accent {
+		font-style: italic;
+		letter-spacing: -0.01em;
+		color: var(--color-gold);
+	}
+
+	.legacy-text {
+		flex: 1 1 440px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 22px;
+		min-inline-size: 0;
+		padding-block: 8px;
+		padding-inline-start: 40px;
+		border-inline-start: 3px solid var(--color-gold);
+		font-size: var(--text-xl);
+		line-height: 1.75;
+	}
+
+	.legacy-kicker {
+		font-family: var(--font-serif);
+		font-size: 1.375rem;
+		font-style: italic;
+		line-height: normal;
+		color: var(--color-bronze);
+	}
+
+	.legacy-text h2 {
+		font-family: var(--font-serif);
+		font-size: clamp(2.375rem, 4vw, 3.375rem);
+		font-weight: 500;
+		line-height: 1.05;
+		color: var(--color-green-800);
+	}
+
+	.section-title {
+		font-family: var(--font-serif);
+		font-size: clamp(2.5rem, 4.4vw, 3.75rem);
+		font-weight: 500;
+		line-height: 1.05;
+	}
+
+	.priorities-section {
+		--focus-ring-color: var(--color-gold-light);
+		--eyebrow-color: var(--color-gold-light);
+		background: var(--color-green-800);
+		color: var(--color-cream);
+	}
+
+	.priorities-inner {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+		padding-block: 104px 112px;
+	}
+
+	.priorities {
+		display: flex;
+		gap: 12px;
+	}
+
+	.panel {
+		position: relative;
+		flex: 1 1 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 24px;
+		min-inline-size: 0;
+		min-block-size: 400px;
+		padding: 36px 32px;
+		overflow: hidden;
+		background: var(--color-green-700);
+		border-radius: var(--radius);
+		transition:
+			flex-grow 0.6s cubic-bezier(0.22, 0.7, 0.2, 1),
+			background-color 0.45s ease,
+			color 0.45s ease;
+	}
+
+	.panel-number {
+		font-family: var(--font-serif);
+		font-size: 1.75rem;
+		font-style: italic;
+		color: var(--color-gold-light);
+		transition: color 0.45s ease;
+	}
+
+	.panel-body {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+
+	.panel h3 {
+		inline-size: 200px;
+		font-family: var(--font-serif);
+		font-size: 2.125rem;
+		font-weight: 500;
+		line-height: 1.08;
+	}
+
+	/* The whole panel is the button's click target. */
+	.panel-toggle {
+		padding: 0;
+		background: none;
+		border: 0;
+		color: inherit;
+		font: inherit;
+		text-align: start;
+		cursor: pointer;
+	}
+
+	.panel-toggle::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+
+	.panel-toggle:focus-visible {
+		outline: none;
+	}
+
+	.panel:has(.panel-toggle:focus-visible) {
+		outline: 3px solid var(--color-gold);
+		outline-offset: 3px;
+	}
+
+	/* Fixed width so the text doesn't reflow while the panel grows. */
+	.panel-description {
+		inline-size: min(440px, 62vw);
+		max-inline-size: 100%;
+		font-size: var(--text-lg);
+		line-height: 1.6;
+		transition:
+			opacity 0.35s ease,
+			transform 0.45s ease,
+			visibility 0.35s;
+	}
+
+	[data-interactive] .panel[data-state='expanded'] {
+		flex-grow: 2.6;
+		background-color: var(--color-gold);
+		color: var(--color-ink-on-gold);
+	}
+
+	[data-interactive] .panel[data-state='expanded'] .panel-number {
+		color: var(--color-ink-on-gold);
+	}
+
+	[data-interactive] .panel[data-state='expanded'] .panel-description {
+		transition-delay: 0.25s;
+	}
+
+	[data-interactive] .panel[data-state='collapsed'] .panel-description {
+		visibility: hidden;
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	/* Stacked on narrow screens, where there's room to show every description. */
+	@media (max-width: 47.5rem) {
+		.priorities {
+			flex-direction: column;
+		}
+
+		.panel {
+			min-block-size: 170px;
+		}
+
+		.panel-description {
+			inline-size: auto;
+		}
+
+		[data-interactive] .panel[data-state='collapsed'] .panel-description {
+			visibility: visible;
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	.impact {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 24px 80px;
+		margin-block-start: 72px;
+		padding-block-start: 48px;
+		border-block-start: 1px solid color-mix(in srgb, var(--color-gold-light) 45%, transparent);
+	}
+
+	.impact .eyebrow {
+		flex: 0 0 220px;
+	}
+
+	.impact-statement {
+		flex: 1 1 560px;
+		min-inline-size: 0;
+		font-family: var(--font-serif);
+		font-size: clamp(1.625rem, 2.8vw, 2.375rem);
+		line-height: 1.35;
+	}
+
+	.impact-word {
+		display: inline-block;
+		transition:
+			opacity 0.6s ease,
+			transform 0.6s ease;
+		transition-delay: calc(200ms + var(--word-index) * 60ms);
+	}
+
+	.impact-word.emphasized {
+		font-style: italic;
+		color: var(--color-gold-light);
+	}
+
+	[data-reveal='waiting'] .impact-word {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.panel,
+		.panel-number,
+		.panel-description,
+		.impact-word {
+			transition: none;
+		}
+	}
+
+	.history {
+		padding-block: 112px;
+	}
+
+	.history .section-title {
+		margin-block-end: 56px;
+		color: var(--color-green-800);
+	}
+
+	.timeline {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+		gap: 40px 48px;
+		border-block-start: 2px solid var(--color-gold);
+	}
+
+	.milestone {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding-block-start: 32px;
+	}
+
+	/* Square marker sitting on the timeline rule. */
+	.milestone::before {
+		content: '';
+		position: absolute;
+		inset-block-start: -9px;
+		inset-inline-start: 0;
+		inline-size: 16px;
+		block-size: 16px;
+		background: var(--color-gold);
+	}
+
+	.milestone-marker {
+		font-family: var(--font-serif);
+		font-size: 4rem;
+		font-weight: 500;
+		line-height: 1;
+		color: var(--color-green-800);
+	}
+
+	.milestone-marker.current {
+		color: var(--color-gold);
+	}
+
+	.milestone-title {
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		color: var(--color-green-800);
+	}
+
+	.milestone-description {
+		font-size: var(--text-md);
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+
+	.next-links {
+		background: var(--color-sand);
+	}
+
+	.next-links-inner {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+	}
+
+	.next-link {
+		display: flex;
+		gap: 8px;
+		padding-block: 56px;
+		color: var(--color-green-800);
+		text-decoration: none;
+	}
+
+	.next-link:hover .next-link-title {
+		text-decoration: underline;
+		text-decoration-color: var(--color-gold);
+		text-underline-offset: 5px;
+	}
+
+	.founder-link {
+		align-items: center;
+		gap: 28px;
+		padding-inline-end: 40px;
+		border-inline-end: 1px solid var(--color-rule);
+	}
+
+	.founder-link img {
+		flex: none;
+		inline-size: 120px;
+		block-size: 150px;
+		object-fit: cover;
+		object-position: 50% 30%;
+		border-radius: var(--radius);
+	}
+
+	.leadership-link {
+		flex-direction: column;
+		justify-content: center;
+		padding-inline-start: 40px;
+	}
+
+	.next-link-text {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.next-link-kicker {
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-bronze);
+	}
+
+	.next-link-title {
+		font-family: var(--font-serif);
+		font-size: 1.875rem;
+		line-height: 1.15;
+	}
+
+	.next-link-title span {
+		color: var(--color-gold);
+	}
+
+	/* Once the two links stack, drop the divider and side padding. */
+	@media (max-width: 47.5rem) {
+		.founder-link,
+		.leadership-link {
+			padding-inline: 0;
+			border-inline-end: 0;
+		}
+
+		.leadership-link {
+			border-block-start: 1px solid var(--color-rule);
+		}
+	}
+</style>
