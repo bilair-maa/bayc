@@ -351,10 +351,12 @@ const milestones = [
 		max-inline-size: 560px;
 	}
 
-	/* Offset gold outline behind the photo. */
+	/* Offset gold outline behind the photo; the offset shrinks so it stays inside phone gutters. */
 	.photo-frame {
+		--frame-offset: clamp(12px, 4vw, 28px);
 		position: absolute;
-		inset: 28px -28px -28px 28px;
+		inset: var(--frame-offset) calc(-1 * var(--frame-offset)) calc(-1 * var(--frame-offset))
+			var(--frame-offset);
 		border: 2px solid var(--color-gold);
 		pointer-events: none;
 	}
@@ -608,13 +610,15 @@ const milestones = [
 		transform: translateY(10px);
 	}
 
-	/* Stacked on narrow screens, where there's room to show every description. */
-	@media (max-width: 47.5rem) {
+	/* Stacked on phones and tablets, where side-by-side panels are too narrow for their titles. */
+	@media (max-width: 63.99rem) {
 		.priorities {
 			flex-direction: column;
 		}
 
+		/* A zero flex-basis would collapse each panel to its minimum height and clip the description. */
 		.panel {
+			flex: none;
 			min-block-size: 170px;
 		}
 

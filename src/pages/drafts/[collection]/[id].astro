@@ -1,0 +1,100 @@
+---
+import DraftAccessMessage from '../../../components/drafts/DraftAccessMessage.astro';
+import EventStory from '../../../components/news/EventStory.astro';
+import NewsStory from '../../../components/news/NewsStory.astro';
+import StatementArticle from '../../../components/news/StatementArticle.astro';
+import Layout from '../../../layouts/Layout.astro';
+import { getAdminAccess } from '../../../data/adminAccess';
+import { getDraftEntry, isDraftCollection } from '../../../data/drafts';
+import { getOtherStatements, getRelatedStories } from '../../../data/news';
+
+// One draft, laid out exactly like its live page, for signed-in Admins.
+const access = await getAdminAccess();
+if (access.kind === 'signed-out') {
+	return Astro.redirect(`/api/auth/login?returnToUrl=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+
+const now = new Date();
+const collection = isDraftCollection(Astro.params.collection) ? Astro.params.collection : undefined;
+const id = Astro.params.id ?? '';
+let loadFailed = false;
+const entry =
+	access.kind === 'admin' && collection
+		? await getDraftEntry(collection, id, now).catch(() => {
+				// A key without draft access (or a Wix outage): shown as a message.
+				loadFailed = true;
+				return undefined;
+			})
+		: undefined;
+const [related, others] = entry
+	? await Promise.all([
+			entry.kind === 'story' ? getRelatedStories(id) : Promise.resolve([]),
+			entry.kind === 'statement' ? getOtherStatements(id) : Promise.resolve([]),
+		])
+	: [[], []];
+
+// No 5xx codes: Wix's hosting replaces those pages with its own error screen.
+if (access.kind === 'not-admin') Astro.response.status = 403;
+else if (access.kind === 'admin' && !loadFailed && !entry) Astro.response.status = 404;
+
+const title = entry?.kind === 'story' ? entry.story.title : entry?.kind === 'statement' ? entry.statement.title : 'Draft';
+---
+
+<Layout pageTitle={`Draft: ${title}`} noIndex>
+	{
+		access.kind !== 'admin' ? (
+			<DraftAccessMessage access={access} returnTo={Astro.url.pathname} />
+		) : entry ? (
+			<>
+				<p class="draft-banner" role="note">
+					Draft preview. Visitors can’t see this until it’s published. <a href="/drafts">All drafts</a>
+				</p>
+				{entry.kind === 'statement' ? (
+					<StatementArticle statement={entry.statement} others={others} />
+				) : entry.story.type === 'News' ? (
+					<NewsStory story={entry.story} related={related} />
+				) : (
+					<EventStory event={entry.story} related={related} now={now} />
+				)}
+			</>
+		) : (
+			<section class="container message" aria-labelledby="draft-missing-heading">
+				<h1 id="draft-missing-heading" class="page-title">
+					{loadFailed ? 'Draft couldn’t be loaded' : 'No draft here'}
+				</h1>
+				<p>
+					{loadFailed
+						? 'The site’s API key may be missing permission to read draft CMS items. Try again in a moment, or check the key’s permissions.'
+						: 'It may have been published or deleted, or it’s missing a title (events also need a start date).'}{' '}
+					See <a href="/drafts">all drafts</a>.
+				</p>
+			</section>
+		)
+	}
+</Layout>
+
+<style>
+	.draft-banner {
+		padding: 12px var(--gutter);
+		background: var(--color-gold);
+		color: var(--color-ink-on-gold);
+		font-weight: 600;
+		text-align: center;
+	}
+
+	.draft-banner a {
+		color: inherit;
+	}
+
+	.message {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+		padding-block: 96px var(--space-section);
+		font-size: var(--text-xl);
+	}
+</style>

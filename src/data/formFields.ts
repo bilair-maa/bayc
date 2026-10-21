@@ -33,7 +33,7 @@ export const interests = [
 ] as const;
 
 export type FormName = 'contact' | 'membership' | 'newsletter';
-export type FormValues = Record<string, string | boolean | string[]>;
+export type FormValues = Record<string, string | string[]>;
 export type FieldErrors = Record<string, string>;
 interface FieldRule {
 	label: string;
@@ -41,7 +41,7 @@ interface FieldRule {
 	maxLength?: number;
 	format?: 'email';
 	options?: readonly { value: string }[];
-	kind?: 'array' | 'boolean';
+	kind?: 'array';
 }
 
 const name = { label: 'Name', required: true, maxLength: 100 };
@@ -65,7 +65,6 @@ export const formFields: Record<FormName, Record<string, FieldRule>> = {
 		city: { label: 'City or Borough', maxLength: 100 },
 		role: { label: 'I am a', required: true, options: roles },
 		interests: { label: 'Interested In', kind: 'array', options: interests },
-		list_in_directory: { label: 'List Me in the Directory', kind: 'boolean' },
 		message: { label: 'Why do you want to join?', maxLength: 2000 },
 	},
 	newsletter: { name, email },
@@ -88,12 +87,6 @@ export function validateForm(
 	const fieldErrors: FieldErrors = {};
 	for (const [key, rule] of Object.entries(formFields[form])) {
 		const raw = input[key];
-		if (rule.kind === 'boolean') {
-			if (raw !== undefined && typeof raw !== 'boolean')
-				fieldErrors[key] = 'Please check this choice.';
-			values[key] = raw === true;
-			continue;
-		}
 		if (rule.kind === 'array') {
 			const selected = raw === undefined ? [] : raw;
 			if (

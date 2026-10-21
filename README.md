@@ -19,6 +19,14 @@ The Directory, Leadership and News & Events pages read from Wix CMS collections.
 - **Article**, **About this event**, **Statement**, **Bio** and **Full bio** use Wix's block editor: headings, lists, quotes, tables, collapsible sections, buttons, images with captions, galleries (photos open full screen in articles), YouTube and Vimeo videos, and code. HTML and embed blocks aren't shown. Fonts, colors and sizes picked in the editor are ignored so every page matches the site's design.
 
 
+### Previewing drafts (Admins only)
+
+Open **/drafts** on the site. It lists every unpublished News post, Event and Statement; select one to see exactly how it will look once published.
+
+- Only signed-in site members with the **Admin** badge can see drafts. Give someone the badge in the Wix dashboard under **Customers & Leads > Members** (they need a site member account first: signing in on /drafts creates one).
+- Anyone else is asked to sign in, or told the page is for Admins only. Drafts pages are never cached or indexed by search engines.
+- The site reads drafts with a Wix API key stored as the server-only `BAYC_ADMIN_API_KEY` setting (`wix env set`, then `wix env pull`). It needs read access to CMS data and member badges only. Without it, /drafts says previews aren't set up.
+
 ## Need help?
 
 For documentation and support, check out:

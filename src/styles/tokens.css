@@ -56,7 +56,7 @@
 	--text-3xl: 1.625rem; /* 26px */
 
 	/* Large page titles on inner pages */
-	--text-display: clamp(3.75rem, 8vw, 7rem);
+	--text-display: clamp(3rem, 8vw, 7rem);
 
 	--leading-body: 1.7;
 
@@ -73,4 +73,12 @@
 
 	/* Dark sections override this so the focus ring stays visible */
 	--focus-ring-color: var(--color-green-800);
+}
+
+/* Phones: tighter edges and section spacing so content gets the width. */
+@media (max-width: 40rem) {
+	:root {
+		--gutter: 20px;
+		--space-section: 80px;
+	}
 }

@@ -1,0 +1,56 @@
+---
+import type { AdminAccess } from '../../data/adminAccess';
+
+// Shown instead of drafts to anyone who isn't a signed-in Admin.
+interface Props {
+	access: Exclude<AdminAccess, { kind: 'admin' } | { kind: 'signed-out' }>;
+	returnTo: string;
+}
+
+const { access, returnTo } = Astro.props;
+---
+
+<section class="container message" aria-labelledby="drafts-message-heading">
+	{
+		access.kind === 'unavailable' ? (
+			<>
+				<h1 id="drafts-message-heading" class="page-title">
+					Previews aren’t set up yet
+				</h1>
+				<p>The site’s admin API key hasn’t been added, so drafts can’t be shown.</p>
+			</>
+		) : (
+			<>
+				<h1 id="drafts-message-heading" class="page-title">
+					Admins only
+				</h1>
+				<p>
+					You’re signed in, but your account doesn’t have the Admin badge. Ask a site owner to give you the Admin badge in the
+					Wix dashboard, then reload this page.
+				</p>
+				<form method="POST" action={`/api/auth/logout?returnToUrl=${encodeURIComponent(returnTo)}`}>
+					<button type="submit" class="chip">
+						Sign in with a different account
+					</button>
+				</form>
+			</>
+		)
+	}
+</section>
+
+<style>
+	.message {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+		padding-block: 96px var(--space-section);
+		font-size: var(--text-xl);
+	}
+
+	.chip {
+		padding-inline: 20px;
+		font-size: var(--text-base);
+		font-weight: 600;
+	}
+</style>

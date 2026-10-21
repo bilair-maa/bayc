@@ -7,10 +7,16 @@ import { site } from '../data/site';
 interface Props {
 	// Omitted on the home page, which uses the organization name alone.
 	pageTitle?: string;
+	// Keeps the page out of search engines (e.g. draft previews).
+	noIndex?: boolean;
 }
 
-const { pageTitle } = Astro.props;
+const { pageTitle, noIndex = false } = Astro.props;
 const title = pageTitle ? `${pageTitle} — ${site.name}` : site.name;
+// Link previews otherwise pick the largest image on the page, such as the founder photo.
+// Wix hosting forwards requests as http, so the scheme is pinned; some preview crawlers don't follow the https redirect.
+const shareImageUrl = new URL('/images/bayc-seal.png', Astro.url);
+shareImageUrl.protocol = 'https:';
 ---
 
 <!doctype html>
@@ -18,6 +24,7 @@ const title = pageTitle ? `${pageTitle} — ${site.name}` : site.name;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		{noIndex && <meta name="robots" content="noindex, nofollow" />}
 		<link rel="icon" type="image/png" href="/images/bayc-seal.png" />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,6 +34,16 @@ const title = pageTitle ? `${pageTitle} — ${site.name}` : site.name;
 			href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Public+Sans:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500&display=swap"
 		/>
 		<title>{title}</title>
+		<meta name="description" content={site.descriptor} />
+		<!-- Wix injects og:title, og:url, og:type, og:site_name and twitter:card itself. -->
+		<meta property="og:description" content={site.descriptor} />
+		<meta property="og:image" content={shareImageUrl.href} />
+		<meta property="og:image:secure_url" content={shareImageUrl.href} />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content="1254" />
+		<meta property="og:image:height" content="1254" />
+		<meta property="og:image:alt" content={`${site.name} seal`} />
+		<meta name="twitter:image" content={shareImageUrl.href} />
 	</head>
 	<body>
 		<a href="#main" class="skip-link">Skip to content</a>

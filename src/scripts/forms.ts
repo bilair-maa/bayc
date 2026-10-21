@@ -115,9 +115,7 @@ function setupForm(
 			values[key] =
 				rule.kind === 'array'
 					? data.getAll(key)
-					: rule.kind === 'boolean'
-						? data.has(key)
-						: (data.get(key) ?? '');
+					: (data.get(key) ?? '');
 		}
 		return values;
 	}

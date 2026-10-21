@@ -20,6 +20,7 @@
     "@wix/data": "^1.0.527",
     "@wix/essentials": "^1.0.6",
     "@wix/forms": "^1.0.533",
+    "@wix/members": "^1.0.534",
     "@wix/sdk": "^1.21.5",
     "astro": "^5.8.0",
     "typescript": "^5.8.3"

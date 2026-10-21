@@ -348,6 +348,31 @@ export async function getEventArticle(id: string): Promise<EventArticle | undefi
 	return record ? toEventArticle(record) : undefined;
 }
 
+// ---- Any entry as its page shows it (used by the Admin draft previews) ----
+
+export type ArticleCollection = 'news' | 'events' | 'statements';
+
+export type ArticleEntry =
+	| { kind: 'story'; story: StoryArticle }
+	| { kind: 'statement'; statement: StatementArticle };
+
+export function toArticleEntry(collection: ArticleCollection, record: CmsRecord): ArticleEntry | undefined {
+	switch (collection) {
+		case 'news': {
+			const story = toNewsArticle(record);
+			return story ? { kind: 'story', story } : undefined;
+		}
+		case 'events': {
+			const story = toEventArticle(record);
+			return story ? { kind: 'story', story } : undefined;
+		}
+		case 'statements': {
+			const statement = toStatementArticle(record);
+			return statement ? { kind: 'statement', statement } : undefined;
+		}
+	}
+}
+
 // An event is upcoming until it ends (or, without an end time, until it starts).
 export function isUpcoming(event: Pick<EventArticle, 'start' | 'end'>, now: Date): boolean {
 	return new Date(event.end ?? event.start).getTime() > now.getTime();

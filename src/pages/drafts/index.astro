@@ -1,0 +1,137 @@
+---
+import DraftAccessMessage from '../../components/drafts/DraftAccessMessage.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getAdminAccess } from '../../data/adminAccess';
+import { draftCollections, listDrafts } from '../../data/drafts';
+import { formatDate } from '../../data/news';
+
+// Every unpublished News post, Event and Statement, for signed-in Admins.
+const access = await getAdminAccess();
+if (access.kind === 'signed-out') {
+	return Astro.redirect(`/api/auth/login?returnToUrl=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+if (access.kind === 'not-admin') Astro.response.status = 403;
+
+// A key without draft access (or a Wix outage) shows a message, not a crash.
+// Kept at 200: Wix's hosting replaces 5xx pages with its own error screen.
+const drafts = access.kind === 'admin' ? await listDrafts().catch(() => undefined) : [];
+const groups = draftCollections.map((collection) => ({
+	...collection,
+	drafts: (drafts ?? []).filter((draft) => draft.collection === collection.id),
+}));
+---
+
+<Layout pageTitle="Drafts" noIndex>
+	{
+		access.kind === 'admin' ? (
+			<section class="container drafts" aria-labelledby="drafts-heading">
+				<h1 id="drafts-heading" class="page-title">
+					Drafts
+				</h1>
+				<p class="lede">
+					Unpublished entries, visible only to Admins. Select one to see exactly how it will look on the site.
+				</p>
+				{drafts === undefined && (
+					<p class="load-error" role="alert">
+						Drafts couldn’t be loaded. The site’s API key may be missing permission to read draft CMS items. Try again in a
+						moment, or check the key’s permissions.
+					</p>
+				)}
+				{drafts !== undefined && groups.map((group) => (
+					<section class="group" aria-labelledby={`drafts-${group.id}`}>
+						<h2 id={`drafts-${group.id}`}>{group.label}</h2>
+						{group.drafts.length > 0 ? (
+							<ul role="list">
+								{group.drafts.map((draft) => (
+									<li>
+										<a href={draft.href} class="draft">
+											<span class="draft-title">{draft.title}</span>
+											{draft.updatedAt && (
+												<span class="draft-meta">
+													Last edited <time datetime={draft.updatedAt}>{formatDate(draft.updatedAt)}</time>
+												</span>
+											)}
+										</a>
+									</li>
+								))}
+							</ul>
+						) : (
+							<p class="none">No {group.label.toLowerCase()} drafts.</p>
+						)}
+					</section>
+				))}
+			</section>
+		) : (
+			<DraftAccessMessage access={access} returnTo={Astro.url.pathname} />
+		)
+	}
+</Layout>
+
+<style>
+	.drafts {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+		padding-block: 96px var(--space-section);
+	}
+
+	.lede {
+		max-inline-size: 38em;
+		font-size: var(--text-xl);
+		line-height: var(--leading-body);
+	}
+
+	.group h2 {
+		padding-block-end: 12px;
+		border-block-end: 2px solid var(--color-green-800);
+		font-family: var(--font-serif);
+		font-size: var(--text-3xl);
+		font-weight: 500;
+		color: var(--color-green-800);
+	}
+
+	.draft {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 6px 24px;
+		min-block-size: var(--tap-target);
+		padding-block: 16px;
+		border-block-end: 1px solid var(--color-rule);
+		color: var(--color-ink);
+		text-decoration: none;
+	}
+
+	.draft-title {
+		font-family: var(--font-serif);
+		font-size: 1.3125rem;
+		color: var(--color-green-800);
+	}
+
+	.draft:hover .draft-title {
+		text-decoration: underline;
+		text-decoration-color: var(--color-gold);
+		text-underline-offset: 5px;
+	}
+
+	.load-error {
+		padding: 16px 20px;
+		border-inline-start: 3px solid var(--color-gold);
+		background: var(--color-sand);
+		font-size: var(--text-md);
+	}
+
+	.draft-meta,
+	.none {
+		font-size: var(--text-sm);
+		color: var(--color-text-muted);
+	}
+
+	.none {
+		padding-block-start: 16px;
+	}
+</style>

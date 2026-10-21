@@ -174,6 +174,12 @@ import { membershipApplyId, routes, site } from '../data/site';
 		flex-direction: column;
 		gap: 26px;
 		min-inline-size: 0;
+		container-type: inline-size;
+	}
+
+	/* The hero shares the row with "Why Join", so the viewport-based display size can overflow this column. */
+	.hero-text .page-title {
+		font-size: min(var(--text-display), 16cqi);
 	}
 
 	.headline {

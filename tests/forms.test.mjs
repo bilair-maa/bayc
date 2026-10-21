@@ -156,7 +156,7 @@ test('required fields, invalid emails, length boundaries and choice types are va
 		200,
 	);
 });
-test('membership validates checkbox arrays and explicit directory consent', async () => {
+test('membership validates interest checkbox arrays', async () => {
 	const f = await fixture();
 	const base = {
 		first_name: 'Test',
@@ -164,7 +164,6 @@ test('membership validates checkbox arrays and explicit directory consent', asyn
 		email: 'test@example.com',
 		role: 'student',
 		interests: [],
-		list_in_directory: false,
 	};
 	assert.equal(
 		Object.keys(f.validate('membership', base).fieldErrors).length,
@@ -182,9 +181,9 @@ test('membership validates checkbox arrays and explicit directory consent', asyn
 			f.validate('membership', { ...base, interests }).fieldErrors.interests,
 		);
 	}
-	assert.ok(
-		f.validate('membership', { ...base, list_in_directory: 'yes' }).fieldErrors
-			.list_in_directory,
+	assert.equal(
+		Object.hasOwn(f.validate('membership', base).values, 'list_in_directory'),
+		false,
 	);
 	assert.equal(
 		Object.keys(
@@ -335,7 +334,6 @@ test('temporary mode accepts all three forms without CAPTCHA and keeps other saf
 				email: 'test@example.com',
 				role: 'student',
 				interests: ['mentorship'],
-				list_in_directory: false,
 			},
 		],
 		['newsletter', { name: 'Test', email: 'test@example.com' }],

@@ -109,6 +109,7 @@ a:hover {
 	line-height: 0.96;
 	letter-spacing: -0.02em;
 	color: var(--color-green-800);
+	overflow-wrap: break-word;
 }
 
 /* Small label led by a gold rule, e.g. "— Our Mission". Set --eyebrow-color on dark sections. */
